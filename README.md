@@ -1,4 +1,3 @@
-# Puma Of Perth Road
-A Wolf of Wall Street parody game written in C# Unity
-
-<img src="https://raw.githubusercontent.com/gavinhenderson/PumaOfPerthRoad/master/Other/Logo.jpg"></src>
+<p align="center"><img src="https://raw.githubusercontent.com/gavinhenderson/PumaOfPerthRoad/master/Other/Logo.jpg" style="width:500px;"></img></p>
+<p align="center">
+A Wolf of Wall Street parody game written in C# Unity</p>
