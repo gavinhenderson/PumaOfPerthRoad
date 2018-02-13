@@ -35,3 +35,6 @@ sysinfo.txt
 
 # PowerPoint
 ~$*.pptx
+
+# Video
+*.mp4
