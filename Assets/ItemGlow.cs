@@ -13,7 +13,6 @@ public class ItemGlow : MonoBehaviour {
 
     void OnMouseOver()
     {
-        Debug.Log(transform.name);
         var renderer = GetComponent<Renderer>();
         renderer.material.shader = Shader.Find("Self-Illumin/Outlined Diffuse");
     }
