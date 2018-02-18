@@ -14,8 +14,8 @@ public class Market
 	}
 
 	//Randomly creates a new stock and adds it to the market given a name
-	public void newStock(string name){
-		market.Add (new Stock (name));
+	public void newStock(string name, float offset){
+		market.Add (new Stock (name,offset));
 	}
 
 	//Update all of the stocks
@@ -28,30 +28,38 @@ public class Market
 
 public class Stock
 {
-	private double value;
+	private float value;
 	public string name;
-	private double momentum;
-	List<double> history;
+	private float momentum;
+	List<float> history;
+	private float offset; //between -1 and 1
 
-	public Stock(string name){
+	public Stock(string name, float offset){
+		this.offset = offset;
 		this.name = name;
 		this.value = 100;
 		this.momentum = 0;
-		history = new List<double> ();
+		history = new List<float> ();
 		history.Add (value);
 	}
 
 	public void update(){
-		int momentumDelta = (Random.Range(-10, 10))/10;
+		float randInt = Random.Range (-10, (10+(offset*10)));
+		float momentumDelta = randInt/(10);
+		//Debug.Log (momentumDelta);
 		momentum = momentum + momentumDelta;
-		if(momentum>0.8){ momentum = 0.8; }
-		else if(momentum< -0.8){ momentum = -0.8; }
+		if(momentum>(0.8f+offset)){ 
+			momentum = 0.8f+offset; 
+		}
+		else if(momentum< -0.8){
+			momentum = -0.8f; 
+		}
 		value += momentum;
 		history.Add (value);
-		Debug.Log (value);
+		Debug.Log (this.name+":"+this.value);
 	}
 
-	public double getValue(){
+	public float getValue(){
 		return value;
 	}
 }
@@ -60,7 +68,7 @@ public class Asset
 {
 	private int quantity;
 	private Stock origin;
-	private double boughtPrice;
+	private float boughtPrice;
 
 	public Asset(ref Stock original, int quantity){
 		this.quantity = quantity;
@@ -68,11 +76,11 @@ public class Asset
 		boughtPrice = origin.getValue ();
 	}
 
-	public double getValue(){
+	public float getValue(){
 		return quantity * origin.getValue();
 	}
 
-	public double getProfit(){
+	public float getProfit(){
 		return quantity * (origin.getValue() - boughtPrice);
 	}
 }
@@ -89,8 +97,8 @@ public class Portfolio
 		assets.Add (newAsset);
 	}
 
-	public double getValue(){
-		double value = 0;
+	public float getValue(){
+		float value = 0;
 		foreach (var asset in assets) {
 			value += asset.getValue ();
 		}
@@ -107,7 +115,9 @@ public class StockController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		market = new Market ();
-		market.newStock ("first Stock");
+		market.newStock ("first Stock",0f);
+		market.newStock ("second stock", 0.2f);
+		market.newStock ("third stock", -0.2f);
 		period = 0;
 	}
 	
