@@ -56,7 +56,7 @@ public class Stock
 		}
 		value += momentum;
 		history.Add (value);
-		Debug.Log (this.name+":"+this.value);
+		//Debug.Log (this.name+":"+this.value);
 	}
 
 	public float getValue(){
