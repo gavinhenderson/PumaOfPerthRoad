@@ -5,8 +5,10 @@ class StockViewer{
 
   update(){
     $('#stock-viewer').empty();
+    this.market.sortStocks();
     this.market.iterate((stock) => {
-      var html = "<li>"+stock.name+" $"+stock.price.toFixed(2)+" "+stock.getDiff().toFixed(2)+"</li>";
+      var html = "<li><p class='align-left'>"+stock.name+" $"+stock.price.toFixed(2)+" </p><p class='align-right'>"+stock.getDiff().toFixed(2)+"</p></li>";
+      html += "<div style='clear: both;'></div>"
       $('#stock-viewer').append(html);
     })
   }

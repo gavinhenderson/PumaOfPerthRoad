@@ -44,8 +44,7 @@ class Stock{
   }
 
   getDiff(){
-    console.log(this.history[0]-this.price);
-    return this.history[0] - this.price
+    return this.price - this.history[0];
   }
 }
 
@@ -57,6 +56,18 @@ class Market{
 
   addStock(newStock){
     this.stocks.push(newStock);
+  }
+
+  sortStocks(){
+    this.stocks.sort((a,b) => {
+      if (a.getDiff() > b.getDiff()) {
+        return -1;
+      }
+      if (a.getDiff() < b.getDiff()) {
+        return 1;
+      }
+      return 0;
+    });
   }
 
   update(){
