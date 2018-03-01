@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/gavinhenderson/PumaOfPerthRoad/issues"
   },
-  "homepage": "https://github.com/gavinhenderson/PumaOfPerthRoad#readme"
+  "homepage": "https://github.com/gavinhenderson/PumaOfPerthRoad#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
 }
