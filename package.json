@@ -1,0 +1,19 @@
+{
+  "name": "pumaofperthroad",
+  "version": "0.0.1",
+  "description": "<p align=\"center\"><img src=\"https://raw.githubusercontent.com/gavinhenderson/PumaOfPerthRoad/master/Other/Logo.jpg\" style=\"width:500px;\"></img></p> <p align=\"center\"> A Wolf of Wall Street parody game written in C# Unity</p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gavinhenderson/PumaOfPerthRoad.git"
+  },
+  "author": "Gavin Henderson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gavinhenderson/PumaOfPerthRoad/issues"
+  },
+  "homepage": "https://github.com/gavinhenderson/PumaOfPerthRoad#readme"
+}
