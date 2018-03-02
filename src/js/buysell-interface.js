@@ -1,7 +1,8 @@
 class BuySellInterface{
-  constructor(market){
+  constructor(market, portfolio){
     this.market = market;
     this.listSize = 0;
+    this.portfolio = portfolio;
   }
 
   update(){
@@ -16,10 +17,14 @@ class BuySellInterface{
   }
 
   buy(){
-    console.log("So you want to buy "+$('#stockSelecter').val());
+    var stock = market.getStock($('#stockSelecter').val());
+    var quantity = $('#buysell-quantity').val();
+    portfolio.buy(stock, quantity);
   }
 
   sell(){
-    console.log("So you want to sell "+$('#stockSelecter').val());
+    var stock = market.getStock($('#stockSelecter').val());
+    var quantity = $('#buysell-quantity').val();
+    portfolio.sell(stock, quantity);
   }
 }

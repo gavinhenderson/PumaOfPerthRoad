@@ -20,14 +20,17 @@
       <h1 class="manual-buysell">Manual Buy/Sell</h1>
       <select class="manual-buysell" id="stockSelecter">
       </select>
-      <input type="number" class="manual-buysell" value="1"></input>
+      <input type="number" id="buysell-quantity" class="manual-buysell" value="1"></input>
       <button onclick="buysell.buy();">Buy</button>
       <button onclick="buysell.sell();">Sell</button>
     </div>
 
     <!-- PORTFOLIO -->
+    <script src="js/portfolio-viewer.js"></script>
     <div class="portfolio">
       <h1 class="portfolio">Portfolio</h1>
+      <div class="spending">Cash To Spend $</div><div class="spending" id='cash-value'></div>
+      <ul class="portfolio" id="portfolio-list"></ul>
     </div>
 
     <!-- CONSOLE WINDOW -->
@@ -42,6 +45,7 @@
   crossorigin="anonymous"></script>
   <script src="js/gameLoop.js"></script>
   <script src="js/market.js"></script>
+  <script src="js/portfolio.js"></script>
   <script src="js/setup.js"></script>
 </body>
 

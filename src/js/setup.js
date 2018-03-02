@@ -4,14 +4,17 @@ console.message("Welcome to Puma of Perth Road");
 //this should only be used to update UI
 var loop = new GameLoop(100);
 
-//Create market
+//Create market and protfolio
 var market = new Market();
+var portfolio = new Portfolio(1000);
 
 //create views and add them to loop
 var manualTrading = new StockViewer(market);
 loop.addItem(manualTrading);
-var buysell = new BuySellInterface(market);
+var buysell = new BuySellInterface(market, portfolio);
 loop.addItem(buysell);
+var portfolioView = new PortfolioViewer(portfolio);
+loop.addItem(portfolioView);
 
 //Populate stock market
 market.addStock(new Stock("A", 2));

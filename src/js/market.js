@@ -54,6 +54,14 @@ class Market{
     this.stocks = [];
   }
 
+  getStock(name){
+    var found = null
+    this.iterate((stock)=>{
+      if(stock.name == name){ found=stock; }
+    });
+    return found;
+  }
+
   addStock(newStock){
     this.stocks.push(newStock);
   }
