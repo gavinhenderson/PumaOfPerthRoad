@@ -25,10 +25,8 @@ class Stock{
       var upOrDown = Math.floor(Math.random()*2);
       if(upOrDown==0){
         this.price += (this.price/10);
-        console.message(this.name+" jumped up");
       }else if(upOrDown=1){
         this.price -= (this.price/10);
-        console.message(this.name+" jumped down");
       }
     }
 

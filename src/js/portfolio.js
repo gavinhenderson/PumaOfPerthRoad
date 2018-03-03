@@ -5,6 +5,11 @@ class Portfolio{
   }
 
   buy(addStock, quantity){
+    if(addStock.price*quantity>this.cash){
+      console.message("You have insufficent funds to buy "+addStock.name);
+      return;
+    }
+
     var added = false;
     this.stocks.forEach((stock)=>{
       if(stock.stock.name == addStock.name){
@@ -32,15 +37,22 @@ class Portfolio{
   }
 
   sell(stock, quantity){
-    this.cash += stock.price*quantity;
     for(var i=0;i<this.stocks.length;i++){
       if(stock.name==this.stocks[i].stock.name){
         if(this.stocks[i].quantity-quantity>0){
           this.stocks[i].quantity -= quantity;
-        }else{
+          this.cash += stock.price*quantity;
+          return;
+        }else if (this.stocks[i].quantity-quantity==0){
           this.stocks.splice(i,1);
+          this.cash += stock.price*quantity;
+          return;
+        }else{
+          console.message("You don't have enough of "+stock.name+" to sell");
+          return
         }
       }
     }
+    console.message("You don't have any "+stock.name);
   }
 }
