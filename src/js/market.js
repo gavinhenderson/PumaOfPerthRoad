@@ -1,7 +1,7 @@
 class Stock{
-  constructor(name, volatility){
+  constructor(name, price, volatility){
     this.name = name;
-    this.price = 100;
+    this.price = price;
     this.momentum = 0;
     this.volatility = volatility;
     this.history = [];
@@ -66,10 +66,10 @@ class Market{
 
   sortStocks(){
     this.stocks.sort((a,b) => {
-      if (a.getDiff() > b.getDiff()) {
+      if (a.price > b.price) {
         return -1;
       }
-      if (a.getDiff() < b.getDiff()) {
+      if (a.price < b.price) {
         return 1;
       }
       return 0;

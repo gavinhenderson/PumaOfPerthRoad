@@ -11,21 +11,27 @@ if(false){
   var portfolio = new Portfolio(1000);
 
   //Populate stock market
-  market.addStock(new Stock("A", 2));
-  market.addStock(new Stock("B", 2));
-  market.addStock(new Stock("C", 2));
-  market.addStock(new Stock("D", 2));
-  market.addStock(new Stock("E", 2));
-  market.addStock(new Stock("F", 2));
-  market.addStock(new Stock("G", 2));
-  market.addStock(new Stock("H", 2));
-  market.addStock(new Stock("I", 2));
-  market.addStock(new Stock("J", 2));
-  market.addStock(new Stock("K", 2));
-  market.addStock(new Stock("L", 2));
-  market.addStock(new Stock("M", 2));
-  market.addStock(new Stock("N", 2));
-  market.addStock(new Stock("O", 2));
+  market.addStock(new Stock("ESNT", 477,2));
+  market.addStock(new Stock("OXIG", 788, 2));
+  market.addStock(new Stock("ACA", 141, 2));
+  market.addStock(new Stock("HWDN", 501, 2));
+  market.addStock(new Stock("DRX", 264, 2));
+  market.addStock(new Stock("MNDI", 1911, 2));
+  market.addStock(new Stock("SRE", 55, 2));
+  market.addStock(new Stock("RTO", 272, 2));
+  market.addStock(new Stock("GYM", 250, 2));
+  market.addStock(new Stock("RRS", 5940,2));
+  market.addStock(new Stock("MTC", 21, 2));
+  market.addStock(new Stock("ARW", 350, 2));
+  market.addStock(new Stock("IMI", 1124, 2));
+  market.addStock(new Stock("SGC", 129, 2));
+  market.addStock(new Stock("FAN", 196, 2));
+
+  portfolio.buy(market.getStock('ESNT'),1);
+  portfolio.buy(market.getStock('MTC'),1);
+  portfolio.buy(market.getStock('SGC'),1);
+  portfolio.buy(market.getStock('SRE'),1);
+  portfolio.buy(market.getStock('ACA'),1);
 }
 
 //initiate game loop that runs all functions every 100ms;

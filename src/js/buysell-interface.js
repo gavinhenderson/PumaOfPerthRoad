@@ -16,6 +16,11 @@ class BuySellInterface{
     }
   }
 
+  select(name){
+    console.log(name);
+    $('#stockSelecter').val(name);
+  }
+
   buy(){
     var stock = market.getStock($('#stockSelecter').val());
     var quantity = $('#buysell-quantity').val();

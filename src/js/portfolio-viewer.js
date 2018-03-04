@@ -11,7 +11,7 @@ class PortfolioViewer{
 
     this.portfolio.stocks.forEach((current) => {
       var total = current.quantity*current.stock.price;
-      var html = '<p class="portfolio">'+current.stock.name+' '+current.quantity+' '+total.toFixed(2)+'</p>';
+      var html = '<li class="portfolio">'+current.stock.name+' '+current.quantity+' '+total.toFixed(2)+'</li>';
       portfolioListDOM.append(html);
     })
   }

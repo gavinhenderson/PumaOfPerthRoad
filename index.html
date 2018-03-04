@@ -10,19 +10,23 @@
     <script src="js/stock-viewer.js"></script>
     <div class="stock-viewer">
       <h1 class="stock-viewer">Stocks</h1>
-      <ul id="stock-viewer" class="stock-viewer">
-      </ul>
+      <table id="stock-viewer" class="stock-viewer">
+      </table>
     </div>
 
     <!-- BUY/SELL -->
     <script src="js/buysell-interface.js"></script>
     <div class="manual-buysell">
       <h1 class="manual-buysell">Manual Buy/Sell</h1>
-      <select class="manual-buysell" id="stockSelecter">
-      </select>
-      <input type="number" id="buysell-quantity" class="manual-buysell" value="1"></input>
-      <button onclick="buysell.buy();">Buy</button>
-      <button onclick="buysell.sell();">Sell</button>
+      <div class="center">
+        <select class="manual-buysell" id="stockSelecter">
+        </select>
+        <input type="number" id="buysell-quantity" class="manual-buysell" value="1"></input>
+      </div>
+      <div class="center">
+        <button onclick="buysell.buy();">Confirm Buy</button>
+        <button onclick="buysell.sell();">Confirm Sell</button>
+      </div>
     </div>
 
     <!-- PORTFOLIO -->
@@ -43,6 +47,7 @@
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
   <script src="js/gameLoop.js"></script>
   <script src="js/market.js"></script>
   <script src="js/portfolio.js"></script>
