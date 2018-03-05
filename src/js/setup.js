@@ -26,12 +26,6 @@ if(false){
   market.addStock(new Stock("IMI", 1124, 2));
   market.addStock(new Stock("SGC", 129, 2));
   market.addStock(new Stock("FAN", 196, 2));
-
-  portfolio.buy(market.getStock('ESNT'),1);
-  portfolio.buy(market.getStock('MTC'),1);
-  portfolio.buy(market.getStock('SGC'),1);
-  portfolio.buy(market.getStock('SRE'),1);
-  portfolio.buy(market.getStock('ACA'),1);
 }
 
 //initiate game loop that runs all functions every 100ms;

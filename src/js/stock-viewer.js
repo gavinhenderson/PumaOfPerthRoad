@@ -15,10 +15,11 @@ class StockViewer{
       }
       var html = `
         <tr>
-          <td><a href="#" onclick="buysell.select('`+stock.name+`')">`+stock.name+`</a></td>
+          <td>`+stock.name+`</td>
           <td>$`+stock.price.toFixed(2)+`</td>
           <td>`+stock.getDiff().toFixed(2)+`</td>
           <td>`+icon+`</td>
+          <td><button onclick="buysell.select('`+stock.name+`')">Select</button></td>"
         </tr>`
 
       //var html = "<li><p class='align-left'>"+stock.name+" $"+stock.price.toFixed(2)+" </p><p class='align-right'>"+stock.getDiff().toFixed(2)+"</p></li>";

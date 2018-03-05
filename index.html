@@ -24,8 +24,12 @@
         <input type="number" id="buysell-quantity" class="manual-buysell" value="1"></input>
       </div>
       <div class="center">
-        <button onclick="buysell.buy();">Confirm Buy</button>
-        <button onclick="buysell.sell();">Confirm Sell</button>
+        $<p class="no-new-line" id="stockPrice">342332</p> x <p id="displayQuantity" class="no-new-line">10</p>
+        <p id="tempTotal">3242139</p>
+      </div>
+      <div class="center">
+        <button id="buyButton" onclick="buysell.buy();" disabled>Confirm Buy</button>
+        <button id="sellButton" onclick="buysell.sell();" disabled>Confirm Sell</button>
       </div>
     </div>
 
@@ -33,8 +37,17 @@
     <script src="js/portfolio-viewer.js"></script>
     <div class="portfolio">
       <h1 class="portfolio">Portfolio</h1>
-      <div class="spending">Cash To Spend $</div><div class="spending" id='cash-value'></div>
-      <ul class="portfolio" id="portfolio-list"></ul>
+      <div class="center">
+        Cash To Spend $<p class="no-new-line" id="cash-value"></p>
+      </div>
+      <table class="portfolio" id="portfolio-list">
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+        </tr>
+      </table>
     </div>
 
     <!-- CONSOLE WINDOW -->
