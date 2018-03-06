@@ -1,7 +1,5 @@
 class StockViewer{
-  constructor(market){
-    this.market = market;
-
+  repopulate(){
     $('#stock-viewer').empty();
     //this.market.sortStocks();
     this.market.iterate((stock) => {
@@ -21,9 +19,18 @@ class StockViewer{
         </tr>`
       $('#stock-viewer').append(html);
     })
+    this.marketSize = this.market.stocks.length;
+  }
+
+  constructor(market){
+    this.market = market;
+    this.marketSize = 0;
+    this.repopulate()
   }
 
   update(){
+    if(this.marketSize != this.market.stocks.length){ repopulate() }
+
     this.market.iterate(stock => {
       var icon = "";
       if(stock.getDiff()>0){

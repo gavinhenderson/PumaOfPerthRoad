@@ -1,9 +1,11 @@
 class PortfolioViewer{
   constructor(portfolio){
     this.portfolio = portfolio;
+    this.portfolioSize = 0;
+    this.repopulate();
   }
 
-  update(){
+  repopulate(){
     $('#cash-value').text(this.portfolio.cash.toFixed(2));
 
     var portfolioListDOM = $('#portfolio-list');
@@ -26,15 +28,23 @@ class PortfolioViewer{
       var html = `
         <tr>
           <td>`+current.stock.name+`</td>
-          <td>`+current.stock.price.toFixed(2)+`</td>
-          <td>`+(current.quantity*current.stock.price).toFixed(2)+`</td>
-          <td>`+current.quantity+`
+          <td id="`+current.stock.name+`PortPrice">`+current.stock.price.toFixed(2)+`</td>
+          <td id="`+current.stock.name+`PortTotal">`+(current.quantity*current.stock.price).toFixed(2)+`</td>
+          <td><p class="no-new-line" id="`+current.stock.name+`PortQuant">`+current.quantity+`</p>
           <button onclick="buysell.select('`+current.stock.name+`')">Select</button></td>
         </td>
       `
-
-      //var html = '<li class="portfolio">'+current.stock.name+' '+current.quantity+' '+total.toFixed(2)+'</li>';
       portfolioListDOM.append(html);
+    })
+    this.portfolioSize = this.portfolio.stocks.length;
+  }
+
+  update(){
+    if(this.portfolioSize != this.portfolio.stocks.length){ this.repopulate(); }
+    this.portfolio.stocks.forEach(current => {
+      $('#'+current.stock.name+'PortPrice').text(current.stock.price.toFixed(2));
+      $('#'+current.stock.name+'PortTotal').text((current.quantity*current.stock.price).toFixed(2));
+      $('#'+current.stock.name+'PortQuant').text(current.quantity);
     })
   }
 }

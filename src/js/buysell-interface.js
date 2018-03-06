@@ -56,8 +56,8 @@ class BuySellInterface{
   }
 
   select(name){
-    console.log(name)
     $('#stockSelecter').val(name);
+    this.updateButtons();
   }
 
   buy(){
