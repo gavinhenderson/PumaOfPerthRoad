@@ -7,7 +7,6 @@
   <div class="wrapper">
 
     <!-- STOCK VIEWER -->
-    <script src="js/stock-viewer.js"></script>
     <div class="stock-viewer">
       <h1 class="stock-viewer">Stocks</h1>
       <table id="stock-viewer" class="stock-viewer">
@@ -15,7 +14,6 @@
     </div>
 
     <!-- BUY/SELL -->
-    <script src="js/buysell-interface.js"></script>
     <div class="manual-buysell">
       <h1 class="manual-buysell">Manual Buy/Sell</h1>
       <div class="center">
@@ -28,13 +26,12 @@
         <p id="tempTotal">3242139</p>
       </div>
       <div class="center">
-        <button id="buyButton" onclick="buysell.buy();" disabled>Confirm Buy</button>
-        <button id="sellButton" onclick="buysell.sell();" disabled>Confirm Sell</button>
+        <button id="buyButton" disabled>Confirm Buy</button>
+        <button id="sellButton" disabled>Confirm Sell</button>
       </div>
     </div>
 
     <!-- PORTFOLIO -->
-    <script src="js/portfolio-viewer.js"></script>
     <div class="portfolio">
       <h1 class="portfolio">Portfolio</h1>
       <div class="center">
@@ -51,20 +48,16 @@
     </div>
 
     <!-- CONSOLE WINDOW -->
-    <script src="js/console.js"></script>
     <div class="console" id="console">
     </div>
   </div>
-
   <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
   <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
-  <script src="js/gameLoop.js"></script>
-  <script src="js/market.js"></script>
-  <script src="js/portfolio.js"></script>
-  <script src="js/setup.js"></script>
+  <script src="bundle.js"></script>
+
 </body>
 
 </html>

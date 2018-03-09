@@ -1,5 +1,6 @@
-class PortfolioViewer{
-  constructor(portfolio){
+module.exports = class{
+  constructor(portfolio, buysell){
+    this.buysell = buysell;
     this.portfolio = portfolio;
     this.portfolioSize = 0;
     this.repopulate();
@@ -31,10 +32,13 @@ class PortfolioViewer{
           <td id="`+current.stock.name+`PortPrice">`+current.stock.price.toFixed(2)+`</td>
           <td id="`+current.stock.name+`PortTotal">`+(current.quantity*current.stock.price).toFixed(2)+`</td>
           <td><p class="no-new-line" id="`+current.stock.name+`PortQuant">`+current.quantity+`</p>
-          <button onclick="buysell.select('`+current.stock.name+`')">Select</button></td>
+          <button id="portfolioselect`+current.stock.name+`">Select</button></td>
         </td>
       `
       portfolioListDOM.append(html);
+      $('#portfolioselect'+current.stock.name).click(()=>{
+        this.buysell.select(current.stock.name);
+      })
     })
     this.portfolioSize = this.portfolio.stocks.length;
   }

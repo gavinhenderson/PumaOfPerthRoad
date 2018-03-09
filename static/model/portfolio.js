@@ -1,5 +1,6 @@
-class Portfolio{
-  constructor(cashValue){
+module.exports = class{
+  constructor(cashValue, market){
+    this.market = market;
     this.stocks = [];
     this.cash = cashValue;
   }
@@ -76,7 +77,7 @@ class Portfolio{
     var tStocks = JSON.parse(localStorage.getItem('portfolio.stocks'));
     tStocks.forEach(current=>{
       var temp = {
-        stock: market.getStock(current.name),
+        stock: this.market.getStock(current.name),
         quantity: current.quantity,
         buyprice: current.buyPrice
       }
