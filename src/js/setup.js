@@ -2,14 +2,14 @@ console.message("Welcome to Puma of Perth Road");
 console.message("Keep an eye out on this console, you will recieve all your missions here");
 
 //Load variables
-//if(localStorage.getItem('saved')){
-if(false){
-  var market = localStorage.getItem('market');
-  var portfolio = localStorage.getItem('portfolio');
-}else{ //Init variables
-  var market = new Market();
-  var portfolio = new Portfolio(1000);
+var market = new Market();
+var portfolio = new Portfolio(1000);
 
+if(localStorage.getItem('saved')){
+//if(false){
+  market.load();
+  portfolio.load();
+} else {
   //Populate stock market
   market.addStock(new Stock("ESNT", 477,2));
   market.addStock(new Stock("OXIG", 788, 2));
@@ -45,7 +45,8 @@ loop.addRepeating(()=>{market.update()},500);
 
 //Save game every 10 seconds
 loop.addRepeating(()=>{
-  localStorage.setItem('market', market);
-  localStorage.setItem('portfolio', portfolio);
+  market.save();
+  portfolio.save();
   localStorage.setItem('saved',true);
+  console.log("save");
 },10000);

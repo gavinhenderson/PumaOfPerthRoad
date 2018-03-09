@@ -40,6 +40,7 @@ class PortfolioViewer{
   }
 
   update(){
+    $('#cash-value').text(this.portfolio.cash.toFixed(2));
     if(this.portfolioSize != this.portfolio.stocks.length){ this.repopulate(); }
     this.portfolio.stocks.forEach(current => {
       $('#'+current.stock.name+'PortPrice').text(current.stock.price.toFixed(2));
