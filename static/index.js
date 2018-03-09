@@ -3,6 +3,7 @@ var Market      = require('./model/market.js');
 var Portfolio   = require('./model/portfolio.js');
 var GameLoop    = require('./model/gameLoop.js');
 var StockViewer = require('./view/stock-viewer.js');
+var GameSave    = require('./model/gameSave.js');
 
 var PortfolioViewer     = require('./view/portfolio-viewer.js');
 var BuySellInterface    = require('./view/buysell-interface.js');
@@ -15,10 +16,12 @@ gameConsole.message("Keep an eye out on this console, you will recieve all your 
 var market = new Market();
 var portfolio = new Portfolio(1000, market);
 
-if(localStorage.getItem('saved')){
-//if(false){
-  market.load();
-  portfolio.load();
+var gameSave = new GameSave();
+gameSave.addItem(market);
+gameSave.addItem(portfolio);
+
+if(gameSave.doesExist()){
+  gameSave.load();
 } else {
   //Populate stock market
   market.addStock(new Stock("ESNT", 478,2));
@@ -55,8 +58,5 @@ loop.addRepeating(()=>{market.update()},500);
 
 //Save game every 10 seconds
 loop.addRepeating(()=>{
-  market.save();
-  portfolio.save();
-  localStorage.setItem('saved',true);
-  console.log("save");
+  gameSave.save();
 },10000);

@@ -4,6 +4,7 @@ var Market      = require('./model/market.js');
 var Portfolio   = require('./model/portfolio.js');
 var GameLoop    = require('./model/gameLoop.js');
 var StockViewer = require('./view/stock-viewer.js');
+var GameSave    = require('./model/gameSave.js');
 
 var PortfolioViewer     = require('./view/portfolio-viewer.js');
 var BuySellInterface    = require('./view/buysell-interface.js');
@@ -16,10 +17,12 @@ gameConsole.message("Keep an eye out on this console, you will recieve all your 
 var market = new Market();
 var portfolio = new Portfolio(1000, market);
 
-if(localStorage.getItem('saved')){
-//if(false){
-  market.load();
-  portfolio.load();
+var gameSave = new GameSave();
+gameSave.addItem(market);
+gameSave.addItem(portfolio);
+
+if(gameSave.doesExist()){
+  gameSave.load();
 } else {
   //Populate stock market
   market.addStock(new Stock("ESNT", 478,2));
@@ -56,23 +59,23 @@ loop.addRepeating(()=>{market.update()},500);
 
 //Save game every 10 seconds
 loop.addRepeating(()=>{
-  market.save();
-  portfolio.save();
-  localStorage.setItem('saved',true);
-  console.log("save");
+  gameSave.save();
 },10000);
 
-},{"./model/gameLoop.js":2,"./model/market.js":3,"./model/portfolio.js":4,"./view/buysell-interface.js":5,"./view/console.js":6,"./view/portfolio-viewer.js":7,"./view/stock-viewer.js":8}],2:[function(require,module,exports){
+},{"./model/gameLoop.js":2,"./model/gameSave.js":3,"./model/market.js":4,"./model/portfolio.js":5,"./view/buysell-interface.js":6,"./view/console.js":7,"./view/portfolio-viewer.js":8,"./view/stock-viewer.js":9}],2:[function(require,module,exports){
 module.exports = class{
 
   constructor(){
+    this.paused = false;
     this.views = [];
     this.repeating = [];
     this.waiting = [];
     setInterval(() => {
-      this.runViewUpdate();
-      this.runRepeating();
-      this.runWaiting();
+      if(!this.paused){
+        this.runViewUpdate();
+        this.runRepeating();
+        this.runWaiting();
+      }
     },100)
   }
 
@@ -128,6 +131,39 @@ module.exports = class{
 }
 
 },{}],3:[function(require,module,exports){
+module.exports = class{
+  constructor(){
+    this.saveItems = [];
+  }
+
+  doesExist(){
+    return localStorage.getItem('saved');
+  }
+
+  addItem(newItem){
+    this.saveItems.push(newItem);
+  }
+
+  load(){
+    this.saveItems.forEach(current => {
+      current.load();
+    })
+  }
+
+  save(){
+    this.saveItems.forEach(current => {
+      current.save();
+    })
+    localStorage.setItem('saved',true);
+  }
+
+  restart(){
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+},{}],4:[function(require,module,exports){
 class Stock{
   constructor(name, price, volatility){
     this.name = name;
@@ -246,7 +282,7 @@ module.exports = class{
 
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 module.exports = class{
   constructor(cashValue, market){
     this.market = market;
@@ -335,7 +371,7 @@ module.exports = class{
   }
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = class{
   constructor(market, portfolio){
     this.market = market;
@@ -417,7 +453,7 @@ module.exports = class{
   }
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = class{
   constructor(){
     this.consoleDomElement = $('#console');
@@ -435,7 +471,7 @@ module.exports = class{
   }
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = class{
   constructor(portfolio, buysell){
     this.buysell = buysell;
@@ -492,7 +528,7 @@ module.exports = class{
   }
 }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = class{
   constructor(market, buysell){
     this.buysell = buysell;
