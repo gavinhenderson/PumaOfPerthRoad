@@ -1,4 +1,11 @@
-class StockViewer{
+module.exports = class{
+  constructor(market, buysell){
+    this.buysell = buysell;
+    this.market = market;
+    this.marketSize = 0;
+    this.repopulate()
+  }
+
   repopulate(){
     $('#stock-viewer').empty();
     //this.market.sortStocks();
@@ -15,17 +22,12 @@ class StockViewer{
           <td id="`+stock.name+`Price">$`+stock.price.toFixed(2)+`</td>
           <td id="`+stock.name+`Diff">`+stock.getDiff().toFixed(2)+`</td>
           <td><i id="`+stock.name+`Icon" class="`+icon+`"></i></td>
-          <td><button onclick="buysell.select('`+stock.name+`')">Select</button></td>"
+          <td><button id="buysellselect`+stock.name+`">Select</button></td>"
         </tr>`
       $('#stock-viewer').append(html);
+      $('#buysellselect'+stock.name).click(() => { this.buysell.select(stock.name) });
     })
     this.marketSize = this.market.stocks.length;
-  }
-
-  constructor(market){
-    this.market = market;
-    this.marketSize = 0;
-    this.repopulate()
   }
 
   update(){

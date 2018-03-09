@@ -46,7 +46,7 @@ class Stock{
   }
 }
 
-class Market{
+module.exports = class{
 
   constructor(){
     this.stocks = [];

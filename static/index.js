@@ -1,9 +1,19 @@
-console.message("Welcome to Puma of Perth Road");
-console.message("Keep an eye out on this console, you will recieve all your missions here");
+var GameConsole = require('./view/console.js');
+var Market      = require('./model/market.js');
+var Portfolio   = require('./model/portfolio.js');
+var GameLoop    = require('./model/gameLoop.js');
+var StockViewer = require('./view/stock-viewer.js');
+
+var PortfolioViewer     = require('./view/portfolio-viewer.js');
+var BuySellInterface    = require('./view/buysell-interface.js');
+
+var gameConsole = new GameConsole();
+gameConsole.message("Welcome to Puma of Perth Road");
+gameConsole.message("Keep an eye out on this console, you will recieve all your missions here");
 
 //Load variables
 var market = new Market();
-var portfolio = new Portfolio(1000);
+var portfolio = new Portfolio(1000, market);
 
 if(localStorage.getItem('saved')){
 //if(false){
@@ -33,11 +43,11 @@ if(localStorage.getItem('saved')){
 var loop = new GameLoop();
 
 //create views and add them to loop
-var manualTrading = new StockViewer(market);
-loop.addViewItem(manualTrading);
 var buysell = new BuySellInterface(market, portfolio);
 loop.addViewItem(buysell);
-var portfolioView = new PortfolioViewer(portfolio);
+var manualTrading = new StockViewer(market, buysell);
+loop.addViewItem(manualTrading);
+var portfolioView = new PortfolioViewer(portfolio, buysell);
 loop.addViewItem(portfolioView);
 
 //Update stock market valuess

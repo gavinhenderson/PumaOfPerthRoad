@@ -1,4 +1,4 @@
-class GameLoop{
+module.exports = class{
 
   constructor(){
     this.views = [];

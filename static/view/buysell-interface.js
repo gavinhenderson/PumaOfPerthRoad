@@ -1,8 +1,14 @@
-class BuySellInterface{
+module.exports = class{
   constructor(market, portfolio){
     this.market = market;
     this.listSize = 0;
     this.portfolio = portfolio;
+    $('#buyButton').click(()=>{
+      this.buy();
+    });
+    $('#sellButton').click(()=>{
+      this.sell();
+    });
   }
 
   update(){
@@ -19,14 +25,14 @@ class BuySellInterface{
   }
 
   updatePrices(){
-    var stock = market.getStock($('#stockSelecter').val());
+    var stock = this.market.getStock($('#stockSelecter').val());
     $('#stockPrice').text(stock.price.toFixed(2));
     $('#displayQuantity').text($('#buysell-quantity').val());
     $('#tempTotal').text("= $"+(stock.price*$('#buysell-quantity').val()).toFixed(2));
   }
 
   updateButtons(){
-    var stock = market.getStock($('#stockSelecter').val());
+    var stock = this.market.getStock($('#stockSelecter').val());
 
     var sellable = false;
     for(var i=0;i<this.portfolio.stocks.length;i++){
@@ -61,14 +67,14 @@ class BuySellInterface{
   }
 
   buy(){
-    var stock = market.getStock($('#stockSelecter').val());
+    var stock = this.market.getStock($('#stockSelecter').val());
     var quantity = $('#buysell-quantity').val();
-    portfolio.buy(stock, quantity);
+    this.portfolio.buy(stock, quantity);
   }
 
   sell(){
-    var stock = market.getStock($('#stockSelecter').val());
+    var stock = this.market.getStock($('#stockSelecter').val());
     var quantity = $('#buysell-quantity').val();
-    portfolio.sell(stock, quantity);
+    this.portfolio.sell(stock, quantity);
   }
 }

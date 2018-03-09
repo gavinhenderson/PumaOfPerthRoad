@@ -3,7 +3,7 @@ const app     = express();
 const port    = 80;
 
 //Serve src statically
-app.use(express.static('src'))
+app.use(express.static('public'))
 
 //Root
 app.get('/', function (req, res) {
@@ -14,3 +14,5 @@ app.get('/', function (req, res) {
 app.listen(port, () => {
   console.log('Running on port:'+port+'!')
 });
+
+//watchify static/index.js -o public/bundle.js
