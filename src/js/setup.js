@@ -11,7 +11,7 @@ if(localStorage.getItem('saved')){
   portfolio.load();
 } else {
   //Populate stock market
-  market.addStock(new Stock("ESNT", 477,2));
+  market.addStock(new Stock("ESNT", 478,2));
   market.addStock(new Stock("OXIG", 788, 2));
   market.addStock(new Stock("ACA", 141, 2));
   market.addStock(new Stock("HWDN", 501, 2));
