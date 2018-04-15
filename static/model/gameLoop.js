@@ -1,13 +1,16 @@
 module.exports = class{
 
   constructor(){
+    this.paused = false;
     this.views = [];
     this.repeating = [];
     this.waiting = [];
     setInterval(() => {
-      this.runViewUpdate();
-      this.runRepeating();
-      this.runWaiting();
+      if(!this.paused){
+        this.runViewUpdate();
+        this.runRepeating();
+        this.runWaiting();
+      }
     },100)
   }
 
