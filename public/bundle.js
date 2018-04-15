@@ -1,68 +1,87 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
-var GameConsole = require('./view/console.js');
-var Market      = require('./model/market.js');
-var Portfolio   = require('./model/portfolio.js');
-var GameLoop    = require('./model/gameLoop.js');
-var StockViewer = require('./view/stock-viewer.js');
-var GameSave    = require('./model/gameSave.js');
+$(document).ready(function() {
+  localStorage.clear();
+  var FB          = require('./model/fb.js')();
+  var GameConsole = require('./view/console.js');
+  var Market      = require('./model/market.js');
+  var Portfolio   = require('./model/portfolio.js');
+  var GameLoop    = require('./model/gameLoop.js');
+  var StockViewer = require('./view/stock-viewer.js');
+  var GameSave    = require('./model/gameSave.js');
 
-var PortfolioViewer     = require('./view/portfolio-viewer.js');
-var BuySellInterface    = require('./view/buysell-interface.js');
+  var PortfolioViewer     = require('./view/portfolio-viewer.js');
+  var BuySellInterface    = require('./view/buysell-interface.js');
 
-var gameConsole = new GameConsole();
-gameConsole.message("Welcome to Puma of Perth Road");
-gameConsole.message("Keep an eye out on this console, you will recieve all your missions here");
+  var gameConsole = new GameConsole();
+  gameConsole.message("Welcome to Puma of Perth Road");
+  gameConsole.message("Keep an eye out on this console, you will recieve all your missions here");
 
-//Load variables
-var market = new Market();
-var portfolio = new Portfolio(1000, market);
+  //Load variables
+  var market = new Market();
+  var portfolio = new Portfolio(1000, market);
 
-var gameSave = new GameSave();
-gameSave.addItem(market);
-gameSave.addItem(portfolio);
+  var gameSave = new GameSave();
+  gameSave.addItem(market);
+  gameSave.addItem(portfolio);
+  if(gameSave.doesExist()){
+    gameSave.load();
+  } else {
+    //Populate stock market
+    market.addStock(new Stock("ESNT", 478,2));
+    market.addStock(new Stock("OXIG", 788, 2));
+    market.addStock(new Stock("ACA", 141, 2));
+    market.addStock(new Stock("HWDN", 501, 2));
+    market.addStock(new Stock("DRX", 264, 2));
+    market.addStock(new Stock("MNDI", 1911, 2));
+    market.addStock(new Stock("SRE", 55, 2));
+    market.addStock(new Stock("RTO", 272, 2));
+    market.addStock(new Stock("GYM", 250, 2));
+    market.addStock(new Stock("RRS", 5940,2));
+    market.addStock(new Stock("MTC", 21, 2));
+    market.addStock(new Stock("ARW", 350, 2));
+    market.addStock(new Stock("IMI", 1124, 2));
+    market.addStock(new Stock("SGC", 129, 2));
+    market.addStock(new Stock("FAN", 196, 2));
+  }
 
-if(gameSave.doesExist()){
-  gameSave.load();
-} else {
-  //Populate stock market
-  market.addStock(new Stock("ESNT", 478,2));
-  market.addStock(new Stock("OXIG", 788, 2));
-  market.addStock(new Stock("ACA", 141, 2));
-  market.addStock(new Stock("HWDN", 501, 2));
-  market.addStock(new Stock("DRX", 264, 2));
-  market.addStock(new Stock("MNDI", 1911, 2));
-  market.addStock(new Stock("SRE", 55, 2));
-  market.addStock(new Stock("RTO", 272, 2));
-  market.addStock(new Stock("GYM", 250, 2));
-  market.addStock(new Stock("RRS", 5940,2));
-  market.addStock(new Stock("MTC", 21, 2));
-  market.addStock(new Stock("ARW", 350, 2));
-  market.addStock(new Stock("IMI", 1124, 2));
-  market.addStock(new Stock("SGC", 129, 2));
-  market.addStock(new Stock("FAN", 196, 2));
+  //initiate game loop that runs all functions every 100ms;
+  //this should only be used to update UI
+  var loop = new GameLoop();
+
+  //create views and add them to loop
+  var buysell = new BuySellInterface(market, portfolio);
+  loop.addViewItem(buysell);
+  var manualTrading = new StockViewer(market, buysell);
+  loop.addViewItem(manualTrading);
+  var portfolioView = new PortfolioViewer(portfolio, buysell);
+  loop.addViewItem(portfolioView);
+
+  //Update stock market valuess
+  loop.addRepeating(()=>{market.update()},500);
+
+  //Save game every 10 seconds
+  loop.addRepeating(()=>{
+    gameSave.save();
+  },10000);
+
+});
+
+},{"./model/fb.js":2,"./model/gameLoop.js":3,"./model/gameSave.js":4,"./model/market.js":5,"./model/portfolio.js":6,"./view/buysell-interface.js":7,"./view/console.js":8,"./view/portfolio-viewer.js":9,"./view/stock-viewer.js":10}],2:[function(require,module,exports){
+module.exports = () => {
+  $.ajaxSetup({ cache: true });
+  $.getScript('https://connect.facebook.net/en_US/sdk.js', function(){
+    FB.init({
+      appId: '714517088910202',
+      version: 'v2.7'
+    });
+    FB.ui({
+      method: 'share',
+      href: 'https://developers.facebook.com/docs/'
+    }, function(response){});
+  });
 }
 
-//initiate game loop that runs all functions every 100ms;
-//this should only be used to update UI
-var loop = new GameLoop();
-
-//create views and add them to loop
-var buysell = new BuySellInterface(market, portfolio);
-loop.addViewItem(buysell);
-var manualTrading = new StockViewer(market, buysell);
-loop.addViewItem(manualTrading);
-var portfolioView = new PortfolioViewer(portfolio, buysell);
-loop.addViewItem(portfolioView);
-
-//Update stock market valuess
-loop.addRepeating(()=>{market.update()},500);
-
-//Save game every 10 seconds
-loop.addRepeating(()=>{
-  gameSave.save();
-},10000);
-
-},{"./model/gameLoop.js":2,"./model/gameSave.js":3,"./model/market.js":4,"./model/portfolio.js":5,"./view/buysell-interface.js":6,"./view/console.js":7,"./view/portfolio-viewer.js":8,"./view/stock-viewer.js":9}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 module.exports = class{
 
   constructor(){
@@ -130,7 +149,7 @@ module.exports = class{
 
 }
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 module.exports = class{
   constructor(){
     this.saveItems = [];
@@ -163,7 +182,7 @@ module.exports = class{
   }
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 class Stock{
   constructor(name, price, volatility){
     this.name = name;
@@ -282,7 +301,7 @@ module.exports = class{
 
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = class{
   constructor(cashValue, market){
     this.market = market;
@@ -371,7 +390,7 @@ module.exports = class{
   }
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = class{
   constructor(market, portfolio){
     this.market = market;
@@ -453,7 +472,7 @@ module.exports = class{
   }
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = class{
   constructor(){
     this.consoleDomElement = $('#console');
@@ -471,7 +490,7 @@ module.exports = class{
   }
 }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = class{
   constructor(portfolio, buysell){
     this.buysell = buysell;
@@ -528,7 +547,7 @@ module.exports = class{
   }
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = class{
   constructor(market, buysell){
     this.buysell = buysell;
