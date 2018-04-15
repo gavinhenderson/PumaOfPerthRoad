@@ -1,4 +1,4 @@
-module.exports = class{
+class Console{
   constructor(){
     this.consoleDomElement = $('#console');
   }
@@ -13,4 +13,11 @@ module.exports = class{
   clear(){
     this.consoleDomElement.empty();
   }
+}
+
+module.exports = () => {
+  let gameConsole = new Console();
+  gameConsole.message("Welcome to Puma of Perth Road!");
+  gameConsole.message("Keep an eye out on this console, you will recieve all your missions here");
+  return gameConsole;
 }
