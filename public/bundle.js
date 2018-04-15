@@ -1,13 +1,14 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 $(document).ready(function() {
   localStorage.clear();
-  var FB          = require('./model/fb.js')();
+  //var FB          = require('./model/fb.js')();
   var GameConsole = require('./view/console.js');
   var Market      = require('./model/market.js');
   var Portfolio   = require('./model/portfolio.js');
   var GameLoop    = require('./model/gameLoop.js');
   var StockViewer = require('./view/stock-viewer.js');
   var GameSave    = require('./model/gameSave.js');
+  var Stock       = require('./model/Stock.js');
 
   var PortfolioViewer     = require('./view/portfolio-viewer.js');
   var BuySellInterface    = require('./view/buysell-interface.js');
@@ -66,19 +67,53 @@ $(document).ready(function() {
 
 });
 
-},{"./model/fb.js":2,"./model/gameLoop.js":3,"./model/gameSave.js":4,"./model/market.js":5,"./model/portfolio.js":6,"./view/buysell-interface.js":7,"./view/console.js":8,"./view/portfolio-viewer.js":9,"./view/stock-viewer.js":10}],2:[function(require,module,exports){
-module.exports = () => {
-  $.ajaxSetup({ cache: true });
-  $.getScript('https://connect.facebook.net/en_US/sdk.js', function(){
-    FB.init({
-      appId: '714517088910202',
-      version: 'v2.7'
-    });
-    FB.ui({
-      method: 'share',
-      href: 'https://developers.facebook.com/docs/'
-    }, function(response){});
-  });
+},{"./model/Stock.js":2,"./model/gameLoop.js":3,"./model/gameSave.js":4,"./model/market.js":5,"./model/portfolio.js":6,"./view/buysell-interface.js":7,"./view/console.js":8,"./view/portfolio-viewer.js":9,"./view/stock-viewer.js":10}],2:[function(require,module,exports){
+module.exports = class {
+  constructor(name, price, volatility){
+    this.name = name;
+    this.price = price;
+    this.momentum = 0;
+    this.volatility = volatility;
+    this.history = [];
+  }
+
+  update(){
+    var rand = Math.floor(Math.random()*21);
+    rand -= 10;
+    rand = rand/10;
+    this.momentum += rand;
+    if(this.momentum>0.8){ this.momentum = 0.8; }
+    else if(this.momentum<-0.8){ this.momentum = -0.8; }
+    this.price += this.momentum
+    if(this.price<0){ this.price = 0;}
+
+    //Jump checking
+    //Generate random no between 1 and 100;
+    var jumpChance = Math.floor(Math.random()*1000)+1
+    if(jumpChance<this.volatility){
+      //jump up or down
+      var upOrDown = Math.floor(Math.random()*2);
+      if(upOrDown==0){
+        this.price += (this.price/10);
+      }else if(upOrDown=1){
+        this.price -= (this.price/10);
+      }
+    }
+
+    this.addHistory(this.price);
+  }
+
+  addHistory(newValue){
+    this.history.push(newValue);
+
+    if(this.history.length>100){
+      this.history.shift();
+    }
+  }
+
+  getDiff(){
+    return this.price - this.history[0];
+  }
 }
 
 },{}],3:[function(require,module,exports){
@@ -183,54 +218,6 @@ module.exports = class{
 }
 
 },{}],5:[function(require,module,exports){
-class Stock{
-  constructor(name, price, volatility){
-    this.name = name;
-    this.price = price;
-    this.momentum = 0;
-    this.volatility = volatility;
-    this.history = [];
-  }
-
-  update(){
-    var rand = Math.floor(Math.random()*21);
-    rand -= 10;
-    rand = rand/10;
-    this.momentum += rand;
-    if(this.momentum>0.8){ this.momentum = 0.8; }
-    else if(this.momentum<-0.8){ this.momentum = -0.8; }
-    this.price += this.momentum
-    if(this.price<0){ this.price = 0;}
-
-    //Jump checking
-    //Generate random no between 1 and 100;
-    var jumpChance = Math.floor(Math.random()*1000)+1
-    if(jumpChance<this.volatility){
-      //jump up or down
-      var upOrDown = Math.floor(Math.random()*2);
-      if(upOrDown==0){
-        this.price += (this.price/10);
-      }else if(upOrDown=1){
-        this.price -= (this.price/10);
-      }
-    }
-
-    this.addHistory(this.price);
-  }
-
-  addHistory(newValue){
-    this.history.push(newValue);
-
-    if(this.history.length>100){
-      this.history.shift();
-    }
-  }
-
-  getDiff(){
-    return this.price - this.history[0];
-  }
-}
-
 module.exports = class{
 
   constructor(){

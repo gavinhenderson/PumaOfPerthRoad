@@ -1,12 +1,13 @@
 $(document).ready(function() {
   localStorage.clear();
-  var FB          = require('./model/fb.js')();
+  //var FB          = require('./model/fb.js')();
   var GameConsole = require('./view/console.js');
   var Market      = require('./model/market.js');
   var Portfolio   = require('./model/portfolio.js');
   var GameLoop    = require('./model/gameLoop.js');
   var StockViewer = require('./view/stock-viewer.js');
   var GameSave    = require('./model/gameSave.js');
+  var Stock       = require('./model/Stock.js');
 
   var PortfolioViewer     = require('./view/portfolio-viewer.js');
   var BuySellInterface    = require('./view/buysell-interface.js');
