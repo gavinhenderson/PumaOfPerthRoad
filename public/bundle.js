@@ -1,4 +1,22 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+const BrokerView  = require('./../view/Broker.js')
+
+class BrokerController{
+  constructor(loop, market, portfolio){
+    this.view = new BrokerView(market.getModel(), portfolio.getModel())
+    loop.addViewItem(this.view);
+  }
+
+  getView(){
+    return this.view
+  }
+}
+
+module.exports = (loop, market, portfolio) => {
+  return new BrokerController(loop, market, portfolio);
+}
+
+},{"./../view/Broker.js":9}],2:[function(require,module,exports){
 const Market        = require('./../model/Market.js');
 const MarketViewer  = require('./../view/Market.js');
 const Stock         = require('./../model/Stock.js');
@@ -40,76 +58,40 @@ module.exports = (loop) => {
   return new MarketController(market, loop);
 }
 
-},{"./../model/Market.js":4,"./../model/Stock.js":5,"./../view/Market.js":7}],2:[function(require,module,exports){
+},{"./../model/Market.js":6,"./../model/Stock.js":8,"./../view/Market.js":11}],3:[function(require,module,exports){
+const PortfolioView  = require('./../view/Portfolio.js');
+const Portfolio      = require('./../model/Portfolio.js');
+
+class PortfolioController{
+  constructor(loop, market){
+    this.model = new Portfolio(1000, market.getModel());
+    this.view = new PortfolioView(this.model);
+    loop.addViewItem(this.view);
+  }
+
+  getView(){
+    return this.view;
+  }
+
+  getModel(){
+    return this.model;
+  }
+}
+
+module.exports = (loop, market) => {
+  return new PortfolioController(loop, market);
+}
+
+},{"./../model/Portfolio.js":7,"./../view/Portfolio.js":12}],4:[function(require,module,exports){
 $(document).ready(function() {
   const GameConsole     = require('./view/Console.js')();
   const Loop            = require('./model/Loop.js')();
   const Market          = require('./controller/Market.js')(Loop);
-})
+  const Portfolio       = require('./controller/Portfolio.js')(Loop, Market);
+  const Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
+});
 
-
-/*$(document).ready(function() {
-  localStorage.clear();
-  //var FB          = require('./model/fb.js')();
-
-  var GameConsole = require('./view/console.js');
-  var Portfolio   = require('./model/portfolio.js');
-  var GameLoop    = require('./model/gameLoop.js');
-  var loop = new GameLoop();
-  //var StockViewer = require('./view/stock-viewer.js');
-  var GameSave    = require('./model/gameSave.js');
-  //var Stock       = require('./model/Stock.js');
-
-  var PortfolioViewer     = require('./view/portfolio-viewer.js');
-  var BuySellInterface    = require('./view/buysell-interface.js');
-
-  var gameConsole = new GameConsole();
-  gameConsole.message("Welcome to Puma of Perth Road!");
-  gameConsole.message("Keep an eye out on this console, you will recieve all your missions here");
-
-
-  //Load variables
-  //var market = new Market();
-
-  //var gameSave = new GameSave();
-  //gameSave.addItem(market);
-  //gameSave.addItem(portfolio);
-  //if(gameSave.doesExist()){
-    //gameSave.load();
-  //} else {
-    //Populate stock market
-
-  //}
-
-  //initiate game loop that runs all functions every 100ms;
-  //this should only be used to update UI
-
-  //create views and add them to loop
-  let market    = require('./controller/Market.js')(loop);
-  var portfolio = new Portfolio(1000, market.getModel());
-
-
-  var buysell = new BuySellInterface(market.getModel(), portfolio);
-  loop.addViewItem(buysell);
-
-  market.createViewer(buysell)
-
-
-
-  var portfolioView = new PortfolioViewer(portfolio, buysell);
-  loop.addViewItem(portfolioView);
-
-  //Update stock market valuess
-  //loop.addRepeating(()=>{market.update()},500);
-
-  //Save game every 10 seconds
-  //loop.addRepeating(()=>{
-    //gameSave.save();
-  //},10000);
-
-});*/
-
-},{"./controller/Market.js":1,"./model/Loop.js":3,"./view/Console.js":6}],3:[function(require,module,exports){
+},{"./controller/Broker.js":1,"./controller/Market.js":2,"./controller/Portfolio.js":3,"./model/Loop.js":5,"./view/Console.js":10}],5:[function(require,module,exports){
 class Loop {
   constructor(){
     this.paused = false;
@@ -179,7 +161,7 @@ module.exports = () => {
   return new Loop();
 }
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = class{
 
   constructor(){
@@ -250,7 +232,96 @@ module.exports = class{
 
 }
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+module.exports = class{
+  constructor(cashValue, market){
+    this.market = market;
+    this.stocks = [];
+    this.cash = cashValue;
+  }
+
+  buy(addStock, quantity){
+    if(addStock.price*quantity>this.cash){
+      console.message("You have insufficent funds to buy "+addStock.name);
+      return;
+    }
+
+    var added = false;
+    this.stocks.forEach((stock)=>{
+      if(stock.stock.name == addStock.name){
+        this.cash -= addStock.price*quantity;
+        stock.quantity += parseInt(quantity);
+        added = true;
+      }
+    })
+    if(!added){
+      this.cash -= addStock.price*quantity;
+      this.stocks.push({
+        'stock': addStock,
+        'quantity': parseInt(quantity),
+        'buyprice': addStock.price
+      })
+    }
+  }
+
+  value(){
+    var value = 0;
+    this.stocks.forEach((stock)=>{
+      value += stock.price;
+    })
+    return value;
+  }
+
+  sell(stock, quantity){
+    for(var i=0;i<this.stocks.length;i++){
+      if(stock.name==this.stocks[i].stock.name){
+        if(this.stocks[i].quantity-quantity>0){
+          this.stocks[i].quantity -= quantity;
+          this.cash += stock.price*quantity;
+          return;
+        }else if (this.stocks[i].quantity-quantity==0){
+          this.stocks.splice(i,1);
+          this.cash += stock.price*quantity;
+          return;
+        }else{
+          console.message("You don't have enough of "+stock.name+" to sell");
+          return
+        }
+      }
+    }
+    console.message("You don't have any "+stock.name);
+  }
+
+  save(){
+    localStorage.setItem('portfolio.cashValue',this.cash);
+    var stocks = [];
+    this.stocks.forEach(current=>{
+      var temp = {
+        name: current.stock.name,
+        quantity: current.quantity,
+        buyPrice: current.buyprice
+      }
+      stocks.push(temp);
+    });
+    //console.log(stocks)
+    localStorage.setItem('portfolio.stocks',JSON.stringify(stocks));
+  }
+
+  load(){
+    this.cash = parseInt(localStorage.getItem('portfolio.cashValue'));
+    var tStocks = JSON.parse(localStorage.getItem('portfolio.stocks'));
+    tStocks.forEach(current=>{
+      var temp = {
+        stock: this.market.getStock(current.name),
+        quantity: current.quantity,
+        buyprice: current.buyPrice
+      }
+      this.stocks.push(temp)
+    })
+  }
+}
+
+},{}],8:[function(require,module,exports){
 module.exports = class {
   constructor(name, price, volatility){
     this.name = name;
@@ -299,7 +370,89 @@ module.exports = class {
   }
 }
 
-},{}],6:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+module.exports = class{
+  constructor(market, portfolio){
+    this.market = market;
+    this.listSize = 0;
+    this.portfolio = portfolio;
+    $('#buyButton').click(()=>{
+      this.buy();
+    });
+    $('#sellButton').click(()=>{
+      this.sell();
+    });
+  }
+
+  update(){
+    if(this.listSize != this.market.stocks.length){
+      $('#stockSelecter').empty();
+      this.market.iterate((stock)=>{
+        this.listSize++;
+        var html = "<option>"+stock.name+"</option>";
+        $('#stockSelecter').append(html);
+      })
+    }
+    this.updatePrices();
+    this.updateButtons();
+  }
+
+  updatePrices(){
+    var stock = this.market.getStock($('#stockSelecter').val());
+    $('#stockPrice').text(stock.price.toFixed(2));
+    $('#displayQuantity').text($('#buysell-quantity').val());
+    $('#tempTotal').text("= $"+(stock.price*$('#buysell-quantity').val()).toFixed(2));
+  }
+
+  updateButtons(){
+    var stock = this.market.getStock($('#stockSelecter').val());
+
+    var sellable = false;
+    for(var i=0;i<this.portfolio.stocks.length;i++){
+      if(stock.name==this.portfolio.stocks[i].stock.name){
+        if(this.portfolio.stocks[i].quantity-$('#buysell-quantity').val()>=0){
+          sellable = true;
+        }
+      }
+    }
+
+    if($('#sellButton').prop('disabled')){
+      if(sellable){ $('#sellButton').removeAttr('disabled'); }
+    }else{
+      if(!sellable){ $('#sellButton').attr('disabled',true); }
+    }
+
+
+    var buyable = false;
+    if(stock.price*$('#buysell-quantity').val()<this.portfolio.cash){
+      buyable=true;
+    }
+    if($('#buyButton').prop('disabled')){
+      if(buyable){ $('#buyButton').removeAttr('disabled'); }
+    }else{
+      if(!buyable){ $('#buyButton').attr('disabled',true); }
+    }
+  }
+
+  select(name){
+    $('#stockSelecter').val(name);
+    this.updateButtons();
+  }
+
+  buy(){
+    var stock = this.market.getStock($('#stockSelecter').val());
+    var quantity = $('#buysell-quantity').val();
+    this.portfolio.buy(stock, quantity);
+  }
+
+  sell(){
+    var stock = this.market.getStock($('#stockSelecter').val());
+    var quantity = $('#buysell-quantity').val();
+    this.portfolio.sell(stock, quantity);
+  }
+}
+
+},{}],10:[function(require,module,exports){
 class Console{
   constructor(){
     this.consoleDomElement = $('#console');
@@ -324,7 +477,7 @@ module.exports = () => {
   return gameConsole;
 }
 
-},{}],7:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = class{
   constructor(market){
     this.market = market;
@@ -374,4 +527,60 @@ module.exports = class{
   }
 }
 
-},{}]},{},[2]);
+},{}],12:[function(require,module,exports){
+module.exports = class{
+  constructor(portfolio){
+    this.portfolio = portfolio;
+    this.portfolioSize = 0;
+    this.repopulate();
+  }
+
+  repopulate(){
+    $('#cash-value').text(this.portfolio.cash.toFixed(2));
+
+    var portfolioListDOM = $('#portfolio-list');
+    portfolioListDOM.empty();
+
+    var html = `
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Amount</th>
+      </tr>
+    `
+
+    portfolioListDOM.append(html);
+
+    this.portfolio.stocks.forEach((current) => {
+      var total = current.quantity*current.stock.price;
+
+      var html = `
+        <tr>
+          <td>`+current.stock.name+`</td>
+          <td id="`+current.stock.name+`PortPrice">`+current.stock.price.toFixed(2)+`</td>
+          <td id="`+current.stock.name+`PortTotal">`+(current.quantity*current.stock.price).toFixed(2)+`</td>
+          <td><p class="no-new-line" id="`+current.stock.name+`PortQuant">`+current.quantity+`</p>
+          <button id="portfolioselect`+current.stock.name+`">Select</button></td>
+        </td>
+      `
+      portfolioListDOM.append(html);
+      $('#portfolioselect'+current.stock.name).click(()=>{
+        $('#stockSelecter').val(current.stock.name);
+      })
+    })
+    this.portfolioSize = this.portfolio.stocks.length;
+  }
+
+  update(){
+    $('#cash-value').text(this.portfolio.cash.toFixed(2));
+    if(this.portfolioSize != this.portfolio.stocks.length){ this.repopulate(); }
+    this.portfolio.stocks.forEach(current => {
+      $('#'+current.stock.name+'PortPrice').text(current.stock.price.toFixed(2));
+      $('#'+current.stock.name+'PortTotal').text((current.quantity*current.stock.price).toFixed(2));
+      $('#'+current.stock.name+'PortQuant').text(current.quantity);
+    })
+  }
+}
+
+},{}]},{},[4]);

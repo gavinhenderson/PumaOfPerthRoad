@@ -1,6 +1,5 @@
 module.exports = class{
-  constructor(portfolio, buysell){
-    this.buysell = buysell;
+  constructor(portfolio){
     this.portfolio = portfolio;
     this.portfolioSize = 0;
     this.repopulate();
@@ -37,7 +36,7 @@ module.exports = class{
       `
       portfolioListDOM.append(html);
       $('#portfolioselect'+current.stock.name).click(()=>{
-        this.buysell.select(current.stock.name);
+        $('#stockSelecter').val(current.stock.name);
       })
     })
     this.portfolioSize = this.portfolio.stocks.length;
