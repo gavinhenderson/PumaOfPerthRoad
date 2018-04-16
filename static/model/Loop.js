@@ -1,5 +1,4 @@
-module.exports = class{
-
+class Loop {
   constructor(){
     this.paused = false;
     this.views = [];
@@ -62,5 +61,8 @@ module.exports = class{
       }
     }
   }
+}
 
+module.exports = () => {
+  return new Loop();
 }

@@ -1,5 +1,7 @@
 $(document).ready(function() {
   const GameConsole     = require('./view/Console.js')();
+  const Loop            = require('./model/Loop.js')();
+  const Market          = require('./controller/Market.js')(Loop);
 })
 
 

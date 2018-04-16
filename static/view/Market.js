@@ -1,6 +1,5 @@
 module.exports = class{
-  constructor(market, buysell){
-    this.buysell = buysell;
+  constructor(market){
     this.market = market;
     this.marketSize = 0;
     this.repopulate()
@@ -25,7 +24,7 @@ module.exports = class{
           <td><button id="buysellselect`+stock.name+`">Select</button></td>"
         </tr>`
       $('#stock-viewer').append(html);
-      $('#buysellselect'+stock.name).click(() => { this.buysell.select(stock.name) });
+      $('#buysellselect'+stock.name).click(() => { $('#stockSelecter').val(stock.name); });
     })
     this.marketSize = this.market.stocks.length;
   }

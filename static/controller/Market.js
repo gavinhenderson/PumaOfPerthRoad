@@ -1,30 +1,24 @@
 const Market        = require('./../model/Market.js');
-const MarketViewer  = require('./../model/Market.js');
+const MarketViewer  = require('./../view/Market.js');
 const Stock         = require('./../model/Stock.js');
 
 class MarketController {
   constructor(model, loop){
     this.loop = loop;
     this.model = model;
-    this.loop.addRepeating(()=>{this.model.update()},500);
+    loop.addRepeating(()=>{this.model.update()},500);
+    this.viewer = new MarketViewer(this.model);
+    loop.addViewItem(this.viewer)
   }
 
   getModel(){
     return this.model;
   }
-
-  createViewer(buysell) {
-    this.viewer = new MarketViewer(this.model, buysell);
-    this.loop.addViewItem(this.viewer);
-  }
 }
 
 module.exports = (loop) => {
-
-
+  // Create Market and Populate it
   let market = new Market();
-
-
   market.addStock(new Stock("ESNT", 478,2));
   market.addStock(new Stock("OXIG", 788, 2));
   market.addStock(new Stock("ACA", 141, 2));
@@ -41,6 +35,6 @@ module.exports = (loop) => {
   market.addStock(new Stock("SGC", 129, 2));
   market.addStock(new Stock("FFN", 196, 2));
 
-  return new MarketController(market,loop);
-
+  // Return the controller
+  return new MarketController(market, loop);
 }
