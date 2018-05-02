@@ -1,23 +1,28 @@
 module.exports = class{
   constructor(market, portfolio){
-    this.market = market;
-    this.listSize = 0;
-    this.portfolio = portfolio;
-    $('#buyButton').click(()=>{
-      this.buy();
+    this.market     = market;
+    this.listSize   = 0;
+    this.portfolio  = portfolio;
+
+    $('#buyButton').click(() => {
+      this.buy()
     });
-    $('#sellButton').click(()=>{
+
+    $('#sellButton').click(() => {
       this.sell();
     });
   }
 
   update(){
+    // Only clear if new stocks
     if(this.listSize != this.market.stocks.length){
+      // Clear stocks
       $('#stockSelecter').empty();
+
+      // Loop through stocks
       this.market.iterate((stock)=>{
         this.listSize++;
-        var html = "<option>"+stock.name+"</option>";
-        $('#stockSelecter').append(html);
+        $('#stockSelecter').append(`<option>${ stock.name }</option>`);
       })
     }
     this.updatePrices();
@@ -25,16 +30,16 @@ module.exports = class{
   }
 
   updatePrices(){
-    var stock = this.market.getStock($('#stockSelecter').val());
+    let stock = this.market.getStock($('#stockSelecter').val());
     $('#stockPrice').text(stock.price.toFixed(2));
     $('#displayQuantity').text($('#buysell-quantity').val());
     $('#tempTotal').text("= $"+(stock.price*$('#buysell-quantity').val()).toFixed(2));
   }
 
   updateButtons(){
-    var stock = this.market.getStock($('#stockSelecter').val());
+    let stock = this.market.getStock($('#stockSelecter').val());
 
-    var sellable = false;
+    let sellable = false;
     for(var i=0;i<this.portfolio.stocks.length;i++){
       if(stock.name==this.portfolio.stocks[i].stock.name){
         if(this.portfolio.stocks[i].quantity-$('#buysell-quantity').val()>=0){
@@ -50,7 +55,7 @@ module.exports = class{
     }
 
 
-    var buyable = false;
+    let buyable = false;
     if(stock.price*$('#buysell-quantity').val()<this.portfolio.cash){
       buyable=true;
     }

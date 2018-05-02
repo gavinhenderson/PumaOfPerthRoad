@@ -373,24 +373,29 @@ module.exports = class {
 },{}],9:[function(require,module,exports){
 module.exports = class{
   constructor(market, portfolio){
-    this.market = market;
-    this.listSize = 0;
-    this.portfolio = portfolio;
-    $('#buyButton').click(()=>{
-      this.buy();
+    this.market     = market;
+    this.listSize   = 0;
+    this.portfolio  = portfolio;
+
+    $('#buyButton').click(() => {
+      this.buy()
     });
-    $('#sellButton').click(()=>{
+
+    $('#sellButton').click(() => {
       this.sell();
     });
   }
 
   update(){
+    // Only clear if new stocks
     if(this.listSize != this.market.stocks.length){
+      // Clear stocks
       $('#stockSelecter').empty();
+
+      // Loop through stocks
       this.market.iterate((stock)=>{
         this.listSize++;
-        var html = "<option>"+stock.name+"</option>";
-        $('#stockSelecter').append(html);
+        $('#stockSelecter').append(`<option>${ stock.name }</option>`);
       })
     }
     this.updatePrices();
@@ -398,16 +403,16 @@ module.exports = class{
   }
 
   updatePrices(){
-    var stock = this.market.getStock($('#stockSelecter').val());
+    let stock = this.market.getStock($('#stockSelecter').val());
     $('#stockPrice').text(stock.price.toFixed(2));
     $('#displayQuantity').text($('#buysell-quantity').val());
     $('#tempTotal').text("= $"+(stock.price*$('#buysell-quantity').val()).toFixed(2));
   }
 
   updateButtons(){
-    var stock = this.market.getStock($('#stockSelecter').val());
+    let stock = this.market.getStock($('#stockSelecter').val());
 
-    var sellable = false;
+    let sellable = false;
     for(var i=0;i<this.portfolio.stocks.length;i++){
       if(stock.name==this.portfolio.stocks[i].stock.name){
         if(this.portfolio.stocks[i].quantity-$('#buysell-quantity').val()>=0){
@@ -423,7 +428,7 @@ module.exports = class{
     }
 
 
-    var buyable = false;
+    let buyable = false;
     if(stock.price*$('#buysell-quantity').val()<this.portfolio.cash){
       buyable=true;
     }
@@ -461,8 +466,7 @@ class Console{
   message(message){
     var date = new Date();
     var newMessage = date.getHours()+":"+date.getMinutes() + " > "+ message;
-    var html = '<p class="console">'+newMessage+'</p>';
-    this.consoleDomElement.prepend(html);
+    this.consoleDomElement.prepend(`<p class="console">${ newMessage }</p>`);
   }
 
   clear(){
@@ -480,45 +484,44 @@ module.exports = () => {
 },{}],11:[function(require,module,exports){
 module.exports = class{
   constructor(market){
-    this.market = market;
+    this.market     = market;
     this.marketSize = 0;
     this.repopulate()
   }
 
   repopulate(){
+    // Clear the viewer
     $('#stock-viewer').empty();
-    //this.market.sortStocks();
+
+    // Loop through all the stocks
     this.market.iterate((stock) => {
-      var icon = "";
-      if(stock.getDiff()>0){
-        icon="green fas fa-chevron-up";
-      }else{
-        icon="red fas fa-chevron-down";
-      }
-      var html = `
+      // Set icon to up or down
+      let icon = stock.getDiff() > 0 ? "green fas fa-chevron-up" : "red fas fa-chevron-down";
+
+      // Add each stock to the list
+      $('#stock-viewer').append(`
         <tr>
-          <td>`+stock.name+`</td>
-          <td id="`+stock.name+`Price">$`+stock.price.toFixed(2)+`</td>
-          <td id="`+stock.name+`Diff">`+stock.getDiff().toFixed(2)+`</td>
-          <td><i id="`+stock.name+`Icon" class="`+icon+`"></i></td>
-          <td><button id="buysellselect`+stock.name+`">Select</button></td>"
-        </tr>`
-      $('#stock-viewer').append(html);
+          <td>${ stock.name }</td>
+          <td id="${ stock.name }Price">$${ stock.price.toFixed(2) }</td>
+          <td id="${ stock.name }Diff">${ stock.getDiff().toFixed(2) }</td>
+          <td><i id="${ stock.name }Icon" class="${ icon }"></i></td>
+          <td><button id="buysellselect${ stock.name }">Select</button></td>"
+        </tr>
+        `);
       $('#buysellselect'+stock.name).click(() => { $('#stockSelecter').val(stock.name); });
     })
+
+    // Set the stock length
     this.marketSize = this.market.stocks.length;
   }
 
   update(){
-    if(this.marketSize != this.market.stocks.length){ repopulate() }
+    // Only update if the stocks have changed
+    if(this.marketSize != this.market.stocks.length){ this.repopulate() }
 
+    // Update the price of each
     this.market.iterate(stock => {
-      var icon = "";
-      if(stock.getDiff()>0){
-        icon="<i class='green fas fa-chevron-up'></i>";
-      }else{
-        icon="<i class='red fas fa-chevron-down'></i>";
-      }
+      var icon = stock.getDiff()>0 ? "<i class='green fas fa-chevron-up'></i>" : "<i class='red fas fa-chevron-down'></i>";
       $('#'+stock.name+'Price').text("$"+stock.price.toFixed(2));
       $('#'+stock.name+'Diff').text(stock.getDiff().toFixed(2));
       $('#'+stock.name+'Icon').empty();
@@ -528,56 +531,63 @@ module.exports = class{
 }
 
 },{}],12:[function(require,module,exports){
-module.exports = class{
-  constructor(portfolio){
-    this.portfolio = portfolio;
-    this.portfolioSize = 0;
+module.exports = class {
+  constructor( portfolio ){
+    this.portfolio      = portfolio;
+    this.portfolioSize  = 0;
     this.repopulate();
   }
 
   repopulate(){
+    // Set cash value
     $('#cash-value').text(this.portfolio.cash.toFixed(2));
 
+    // Empty the list and add headers
     var portfolioListDOM = $('#portfolio-list');
     portfolioListDOM.empty();
-
-    var html = `
+    portfolioListDOM.append(`
       <tr>
         <th>Name</th>
         <th>Price</th>
         <th>Total</th>
         <th>Amount</th>
       </tr>
-    `
+    `);
 
-    portfolioListDOM.append(html);
-
+    // Loop through owned stocks and add them to table.
     this.portfolio.stocks.forEach((current) => {
-      var total = current.quantity*current.stock.price;
-
-      var html = `
+      var total = current.quantity * current.stock.price;
+      portfolioListDOM.append(`
         <tr>
-          <td>`+current.stock.name+`</td>
-          <td id="`+current.stock.name+`PortPrice">`+current.stock.price.toFixed(2)+`</td>
-          <td id="`+current.stock.name+`PortTotal">`+(current.quantity*current.stock.price).toFixed(2)+`</td>
-          <td><p class="no-new-line" id="`+current.stock.name+`PortQuant">`+current.quantity+`</p>
-          <button id="portfolioselect`+current.stock.name+`">Select</button></td>
+          <td>${ current.stock.name }</td>
+          <td id="${ current.stock.name }PortPrice">${ current.stock.price.toFixed(2) }</td>
+          <td id="${ current.stock.name }PortTotal">${ (current.quantity * current.stock.price).toFixed(2) }</td>
+          <td><p class="no-new-line" id="${ current.stock.name }PortQuant">${ current.quantity }</p>
+          <button id="portfolioselect${ current.stock.name }">Select</button></td>
         </td>
-      `
-      portfolioListDOM.append(html);
+      `);
       $('#portfolioselect'+current.stock.name).click(()=>{
         $('#stockSelecter').val(current.stock.name);
-      })
-    })
+      });
+    });
+
+    // Reset the size of the portoflio
     this.portfolioSize = this.portfolio.stocks.length;
   }
 
   update(){
+    // Always reset cash value
     $('#cash-value').text(this.portfolio.cash.toFixed(2));
-    if(this.portfolioSize != this.portfolio.stocks.length){ this.repopulate(); }
+
+    // Only repopulate if stocks have changed
+    if(this.portfolioSize != this.portfolio.stocks.length){
+      this.repopulate();
+    }
+
+    // Alwyas re price every stock
     this.portfolio.stocks.forEach(current => {
       $('#'+current.stock.name+'PortPrice').text(current.stock.price.toFixed(2));
-      $('#'+current.stock.name+'PortTotal').text((current.quantity*current.stock.price).toFixed(2));
+      $('#'+current.stock.name+'PortTotal').text((current.quantity * current.stock.price).toFixed(2));
       $('#'+current.stock.name+'PortQuant').text(current.quantity);
     })
   }
