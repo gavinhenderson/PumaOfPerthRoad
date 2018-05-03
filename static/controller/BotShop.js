@@ -8,6 +8,8 @@ class BotShopController {
     this.Market     = Market;
     this.View       = new View();
     this.Model      = new BotShop();
+    this.Loop.addViewItem( this.View );
+    this.Loop.addRepeating(()=>{ this.Model.update(); }, 500);
   }
 }
 
