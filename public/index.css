@@ -85,7 +85,7 @@ div.manual-buysell{
   border-width: 2px;
   border-color: black;
   float:left;
-  margin-right: 5px
+  margin-right: 5px;
 }
 
 h1.manual-buysell {
@@ -120,6 +120,7 @@ div.portfolio{
   border-width: 2px;
   border-color: black;
   float:left;
+  margin-right: 5px;
 }
 
 h1.portfolio{
@@ -130,6 +131,26 @@ h1.portfolio{
 }
 
 table.portfolio{
+  margin:0 auto;
+}
+
+div.bot-shop{
+  width:250px;
+  min-height: 100px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  float: left;
+}
+
+h1.bot-shop{
+  text-align: center;
+  text-decoration: underline;
+  font-size: 20px;
+  margin:0;
+}
+
+table.bot-shop{
   margin:0 auto;
 }
 
