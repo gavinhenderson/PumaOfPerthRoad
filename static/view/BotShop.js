@@ -19,7 +19,6 @@ module.exports = class {
       `);
     this.model.bots.forEach(current => {
       this.size++;
-    //  console.log(current.costs)
       this.table.append(`
         <tr>
           <td>${ current.name }</td>
@@ -50,6 +49,13 @@ module.exports = class {
       this.model.bots.forEach(current => {
         $('#level'+current.name).text(current.level);
         $('#cost'+current.name).text(current.costs[current.level]);
+
+        // Disable Button if you dont have enough money
+        if(this.model.portfolio.cash >= current.costs[current.level]){
+          $('#upgrade'+current.name).removeAttr('disabled');
+        } else {
+          $('#upgrade'+current.name).attr('disabled',true);
+        }
       });
     }
   }

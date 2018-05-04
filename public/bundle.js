@@ -35,11 +35,7 @@ module.exports = class {
   }
 
   upgrade(bot){
-    console.log(bot.name);
-    console.log(this.portfolio.cash);
-    console.log(bot.costs[bot.level]);
-    if(this.portfolio.cash > bot.costs[bot.level]){
-      console.log("TEST")
+    if(this.portfolio.cash >= bot.costs[bot.level]){
       this.portfolio.cash -= bot.costs[bot.level];
       bot.level ++;
     }
@@ -68,7 +64,6 @@ module.exports = class {
       `);
     this.model.bots.forEach(current => {
       this.size++;
-    //  console.log(current.costs)
       this.table.append(`
         <tr>
           <td>${ current.name }</td>
@@ -99,12 +94,39 @@ module.exports = class {
       this.model.bots.forEach(current => {
         $('#level'+current.name).text(current.level);
         $('#cost'+current.name).text(current.costs[current.level]);
+
+        // Disable Button if you dont have enough money
+        if(this.model.portfolio.cash >= current.costs[current.level]){
+          $('#upgrade'+current.name).removeAttr('disabled');
+        } else {
+          $('#upgrade'+current.name).attr('disabled',true);
+        }
       });
     }
   }
 }
 
 },{}],4:[function(require,module,exports){
+module.exports = {
+  name: "Auto-Buy",
+  description: "This bot will automatically buy stocks when they are about to make a lot of money",
+  costs: [100,200,500,3000],
+  behaviour: function(bot) {
+    console.log(bot.name);
+  }
+}
+
+},{}],5:[function(require,module,exports){
+module.exports = {
+  name: "Auto-Sell",
+  description: "This bot will automatically sell stocks when they are crashing or when they are thriving",
+  costs: [100,200,1000,3000],
+  behaviour: function(bot) {
+    console.log(bot.name);
+  }
+}
+
+},{}],6:[function(require,module,exports){
 const View    = require('./../View/BotShop.js');
 const Model   = require('./../Model/BotShop.js');
 
@@ -126,32 +148,14 @@ class BotShopController {
 module.exports = (Loop, Portfolio, Market) => {
   let controller =  new BotShopController(Loop, Portfolio, Market);
 
-  controller.Model.addBot({
-    name: "testBot1",
-    description: "this is a description",
-    costs: [100,200,100,300],
-    behaviour: function(){ console.log("test") },
-  });
-
-  controller.Model.addBot({
-    name: "testBot2",
-    description: "this is a description",
-    costs: [100,200,100,300],
-    behaviour: function(){ console.log("test") },
-    level: 3
-  });
-
-  controller.Model.addBot({
-    name: "testBot3",
-    description: "this is a description",
-    costs: [100,200,100,300],
-    behaviour: function(){ console.log("test") },
-  });
+  // Bots defined externally
+  controller.Model.addBot(require('./../bot-behaviour/auto-sell.js'));
+  controller.Model.addBot(require('./../bot-behaviour/auto-buy.js'));
 
   return controller;
 }
 
-},{"./../Model/BotShop.js":2,"./../View/BotShop.js":3}],5:[function(require,module,exports){
+},{"./../Model/BotShop.js":2,"./../View/BotShop.js":3,"./../bot-behaviour/auto-buy.js":4,"./../bot-behaviour/auto-sell.js":5}],7:[function(require,module,exports){
 const BrokerView  = require('./../view/Broker.js')
 
 class BrokerController{
@@ -169,7 +173,7 @@ module.exports = (loop, market, portfolio) => {
   return new BrokerController(loop, market, portfolio);
 }
 
-},{"./../view/Broker.js":13}],6:[function(require,module,exports){
+},{"./../view/Broker.js":15}],8:[function(require,module,exports){
 const Market        = require('./../model/Market.js');
 const MarketViewer  = require('./../view/Market.js');
 const Stock         = require('./../model/Stock.js');
@@ -211,7 +215,7 @@ module.exports = (loop) => {
   return new MarketController(market, loop);
 }
 
-},{"./../model/Market.js":10,"./../model/Stock.js":12,"./../view/Market.js":15}],7:[function(require,module,exports){
+},{"./../model/Market.js":12,"./../model/Stock.js":14,"./../view/Market.js":17}],9:[function(require,module,exports){
 const PortfolioView  = require('./../view/Portfolio.js');
 const Portfolio      = require('./../model/Portfolio.js');
 
@@ -235,7 +239,7 @@ module.exports = (loop, market) => {
   return new PortfolioController(loop, market);
 }
 
-},{"./../model/Portfolio.js":11,"./../view/Portfolio.js":16}],8:[function(require,module,exports){
+},{"./../model/Portfolio.js":13,"./../view/Portfolio.js":18}],10:[function(require,module,exports){
 $(document).ready(function() {
   let GameConsole     = require('./view/Console.js')();
 
@@ -247,7 +251,7 @@ $(document).ready(function() {
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
 });
 
-},{"./controller/BotShop.js":4,"./controller/Broker.js":5,"./controller/Market.js":6,"./controller/Portfolio.js":7,"./model/Loop.js":9,"./view/Console.js":14}],9:[function(require,module,exports){
+},{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Market.js":8,"./controller/Portfolio.js":9,"./model/Loop.js":11,"./view/Console.js":16}],11:[function(require,module,exports){
 class Loop {
   constructor(){
     this.paused = false;
@@ -317,7 +321,7 @@ module.exports = () => {
   return new Loop();
 }
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = class{
 
   constructor(){
@@ -388,7 +392,7 @@ module.exports = class{
 
 }
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = class{
   constructor(cashValue, market){
     this.market = market;
@@ -477,7 +481,7 @@ module.exports = class{
   }
 }
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = class {
   constructor(name, price, volatility){
     this.name = name;
@@ -526,7 +530,7 @@ module.exports = class {
   }
 }
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = class{
   constructor(market, portfolio){
     this.market     = market;
@@ -613,7 +617,7 @@ module.exports = class{
   }
 }
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 class Console{
   constructor(){
     this.consoleDomElement = $('#console');
@@ -637,7 +641,7 @@ module.exports = () => {
   return gameConsole;
 }
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = class{
   constructor(market){
     this.market     = market;
@@ -686,7 +690,7 @@ module.exports = class{
   }
 }
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = class {
   constructor( portfolio ){
     this.portfolio      = portfolio;
@@ -749,4 +753,4 @@ module.exports = class {
   }
 }
 
-},{}]},{},[8]);
+},{}]},{},[10]);

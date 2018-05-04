@@ -17,7 +17,7 @@ module.exports = class {
   }
 
   upgrade(bot){
-    if(this.portfolio.cash > bot.costs[bot.level]){
+    if(this.portfolio.cash >= bot.costs[bot.level]){
       this.portfolio.cash -= bot.costs[bot.level];
       bot.level ++;
     }

@@ -19,27 +19,9 @@ class BotShopController {
 module.exports = (Loop, Portfolio, Market) => {
   let controller =  new BotShopController(Loop, Portfolio, Market);
 
-  controller.Model.addBot({
-    name: "testBot1",
-    description: "this is a description",
-    costs: [100,200,100,300],
-    behaviour: function(){ console.log("test") },
-  });
-
-  controller.Model.addBot({
-    name: "testBot2",
-    description: "this is a description",
-    costs: [100,200,100,300],
-    behaviour: function(){ console.log("test") },
-    level: 3
-  });
-
-  controller.Model.addBot({
-    name: "testBot3",
-    description: "this is a description",
-    costs: [100,200,100,300],
-    behaviour: function(){ console.log("test") },
-  });
+  // Bots defined externally
+  controller.Model.addBot(require('./../bot-behaviour/auto-sell.js'));
+  controller.Model.addBot(require('./../bot-behaviour/auto-buy.js'));
 
   return controller;
 }
