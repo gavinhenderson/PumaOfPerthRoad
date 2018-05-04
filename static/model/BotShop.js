@@ -1,8 +1,9 @@
 const Bot = require('./Bot.js');
 
 module.exports = class {
-  constructor ( portfolio ) {
+  constructor ( market, portfolio ) {
     this.portfolio = portfolio.model;
+    this.market    = market.model;
     this.bots = [];
   }
 
@@ -12,7 +13,7 @@ module.exports = class {
 
   update () {
     this.bots.forEach(current => {
-      current.action();
+      current.action(this.market, this.portfolio);
     })
   }
 

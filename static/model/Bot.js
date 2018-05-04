@@ -7,9 +7,9 @@ module.exports = class {
     this.level        = ops.level || 0;
   }
 
-  action() {
+  action(market, portfolio) {
     if(this.level>0){
-      this.behaviour(this);
+      this.behaviour(this, market, portfolio);
     }
   }
 }

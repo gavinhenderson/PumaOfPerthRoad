@@ -111,7 +111,7 @@ module.exports = {
   name: "Auto-Buy",
   description: "This bot will automatically buy stocks when they are about to make a lot of money",
   costs: [100,200,500,3000],
-  behaviour: function(bot) {
+  behaviour: function(bot, market, portfolio) {
     console.log(bot.name);
   }
 }
@@ -121,7 +121,7 @@ module.exports = {
   name: "Auto-Sell",
   description: "This bot will automatically sell stocks when they are crashing or when they are thriving",
   costs: [100,200,1000,3000],
-  behaviour: function(bot) {
+  behaviour: function(bot, market, portfolio) {
     console.log(bot.name);
   }
 }
@@ -135,7 +135,7 @@ class BotShopController {
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
-    this.Model      = new Model( Portfolio );
+    this.Model      = new Model( Market, Portfolio );
     this.View       = new View( this.Model );
 
     this.Loop.addViewItem( this.View );
