@@ -1,13 +1,83 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 module.exports = class {
-  constructor(){
-    
+  constructor (ops) {
+    this.name         = ops.name;
+    this.description  = ops.description;
+    this.costs        = ops.cost;
+    this.behaviour    = ops.behaviour;
+    this.level        = 0;
   }
+
+  action() {
+    if(this.level>0){
+      this.behaviour(this);
+    }
+  }
+
 }
 
 },{}],2:[function(require,module,exports){
+const Bot = require('./Bot.js');
 
-},{}],3:[function(require,module,exports){
+module.exports = class {
+  constructor () {
+    this.bots = [];
+  }
+
+  addBot(ops){
+    this.bots.push(new Bot(ops));
+  }
+
+  update () {
+    this.bots.forEach(current => {
+      current.action();
+    })
+  }
+}
+
+},{"./Bot.js":1}],3:[function(require,module,exports){
+module.exports = class {
+  constructor( model ){
+    this.model = model;
+    this.size = 0;
+    this.table = $('#bot-shop-table');
+    this.update();
+  }
+
+  repopulate(){
+    this.size = 0;
+    this.table.empty();
+    this.table.append(`
+      <tr>
+        <th>Bot</th>
+        <th>Level</th>
+        <th>Upgrade</th>
+      </tr>
+      `);
+    this.model.bots.forEach(current => {
+      this.size++;
+      this.table.append(`
+        <tr>
+          <td>${ current.name }</td>
+          <td id="level${ current.name }">${ current.level }</td>
+          <td><button id="upgrade${ current.name }">Upgrade</button></td>
+        </tr>
+        `);
+    });
+  }
+
+  update(){
+    if(this.size != this.model.bots.length){
+      this.repopulate();
+    } else {
+      this.model.bots.forEach(current => {
+        $('#level'+current.name).text(current.level);
+      });
+    }
+  }
+}
+
+},{}],4:[function(require,module,exports){
 const View    = require('./../View/BotShop.js');
 const Model   = require('./../Model/BotShop.js');
 
@@ -16,18 +86,42 @@ class BotShopController {
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
-    this.View       = new View();
-    this.Model      = new BotShop();
+    this.Model      = new Model();
+    this.View       = new View( this.Model );
+
     this.Loop.addViewItem( this.View );
     this.Loop.addRepeating(()=>{ this.Model.update(); }, 500);
   }
 }
 
 module.exports = (Loop, Portfolio, Market) => {
-  return new BotShopController(Loop, Portfolio, Market);
+  let controller =  new BotShopController(Loop, Portfolio, Market);
+
+  controller.Model.addBot({
+    name: "testBot1",
+    description: "this is a description",
+    costs: [100,200,100,300],
+    behaviour: function(){ console.log("test") },
+  });
+
+  controller.Model.addBot({
+    name: "testBot2",
+    description: "this is a description",
+    costs: [100,200,100,300],
+    behaviour: function(){ console.log("test") },
+  });
+
+  controller.Model.addBot({
+    name: "testBot3",
+    description: "this is a description",
+    costs: [100,200,100,300],
+    behaviour: function(){ console.log("test") },
+  });
+
+  return controller;
 }
 
-},{"./../Model/BotShop.js":1,"./../View/BotShop.js":2}],4:[function(require,module,exports){
+},{"./../Model/BotShop.js":2,"./../View/BotShop.js":3}],5:[function(require,module,exports){
 const BrokerView  = require('./../view/Broker.js')
 
 class BrokerController{
@@ -45,7 +139,7 @@ module.exports = (loop, market, portfolio) => {
   return new BrokerController(loop, market, portfolio);
 }
 
-},{"./../view/Broker.js":12}],5:[function(require,module,exports){
+},{"./../view/Broker.js":13}],6:[function(require,module,exports){
 const Market        = require('./../model/Market.js');
 const MarketViewer  = require('./../view/Market.js');
 const Stock         = require('./../model/Stock.js');
@@ -87,7 +181,7 @@ module.exports = (loop) => {
   return new MarketController(market, loop);
 }
 
-},{"./../model/Market.js":9,"./../model/Stock.js":11,"./../view/Market.js":14}],6:[function(require,module,exports){
+},{"./../model/Market.js":10,"./../model/Stock.js":12,"./../view/Market.js":15}],7:[function(require,module,exports){
 const PortfolioView  = require('./../view/Portfolio.js');
 const Portfolio      = require('./../model/Portfolio.js');
 
@@ -111,7 +205,7 @@ module.exports = (loop, market) => {
   return new PortfolioController(loop, market);
 }
 
-},{"./../model/Portfolio.js":10,"./../view/Portfolio.js":15}],7:[function(require,module,exports){
+},{"./../model/Portfolio.js":11,"./../view/Portfolio.js":16}],8:[function(require,module,exports){
 $(document).ready(function() {
   const GameConsole     = require('./view/Console.js')();
 
@@ -123,7 +217,7 @@ $(document).ready(function() {
   const BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
 });
 
-},{"./controller/BotShop.js":3,"./controller/Broker.js":4,"./controller/Market.js":5,"./controller/Portfolio.js":6,"./model/Loop.js":8,"./view/Console.js":13}],8:[function(require,module,exports){
+},{"./controller/BotShop.js":4,"./controller/Broker.js":5,"./controller/Market.js":6,"./controller/Portfolio.js":7,"./model/Loop.js":9,"./view/Console.js":14}],9:[function(require,module,exports){
 class Loop {
   constructor(){
     this.paused = false;
@@ -193,7 +287,7 @@ module.exports = () => {
   return new Loop();
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = class{
 
   constructor(){
@@ -264,7 +358,7 @@ module.exports = class{
 
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = class{
   constructor(cashValue, market){
     this.market = market;
@@ -353,7 +447,7 @@ module.exports = class{
   }
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = class {
   constructor(name, price, volatility){
     this.name = name;
@@ -402,7 +496,7 @@ module.exports = class {
   }
 }
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = class{
   constructor(market, portfolio){
     this.market     = market;
@@ -489,7 +583,7 @@ module.exports = class{
   }
 }
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 class Console{
   constructor(){
     this.consoleDomElement = $('#console');
@@ -513,7 +607,7 @@ module.exports = () => {
   return gameConsole;
 }
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = class{
   constructor(market){
     this.market     = market;
@@ -562,7 +656,7 @@ module.exports = class{
   }
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = class {
   constructor( portfolio ){
     this.portfolio      = portfolio;
@@ -625,4 +719,4 @@ module.exports = class {
   }
 }
 
-},{}]},{},[7]);
+},{}]},{},[8]);
