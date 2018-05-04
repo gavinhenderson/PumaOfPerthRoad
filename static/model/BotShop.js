@@ -1,7 +1,8 @@
 const Bot = require('./Bot.js');
 
 module.exports = class {
-  constructor () {
+  constructor ( portfolio ) {
+    this.portfolio = portfolio.model;
     this.bots = [];
   }
 
@@ -13,5 +14,12 @@ module.exports = class {
     this.bots.forEach(current => {
       current.action();
     })
+  }
+
+  upgrade(bot){
+    if(this.portfolio.cash > bot.costs[bot.level]){
+      this.portfolio.cash -= bot.costs[bot.level];
+      bot.level ++;
+    }
   }
 }

@@ -3,9 +3,9 @@ module.exports = class {
   constructor (ops) {
     this.name         = ops.name;
     this.description  = ops.description;
-    this.costs        = ops.cost;
+    this.costs        = ops.costs;
     this.behaviour    = ops.behaviour;
-    this.level        = 0;
+    this.level        = ops.level || 0;
   }
 
   action() {
@@ -13,14 +13,14 @@ module.exports = class {
       this.behaviour(this);
     }
   }
-
 }
 
 },{}],2:[function(require,module,exports){
 const Bot = require('./Bot.js');
 
 module.exports = class {
-  constructor () {
+  constructor ( portfolio ) {
+    this.portfolio = portfolio.model;
     this.bots = [];
   }
 
@@ -32,6 +32,17 @@ module.exports = class {
     this.bots.forEach(current => {
       current.action();
     })
+  }
+
+  upgrade(bot){
+    console.log(bot.name);
+    console.log(this.portfolio.cash);
+    console.log(bot.costs[bot.level]);
+    if(this.portfolio.cash > bot.costs[bot.level]){
+      console.log("TEST")
+      this.portfolio.cash -= bot.costs[bot.level];
+      bot.level ++;
+    }
   }
 }
 
@@ -51,19 +62,34 @@ module.exports = class {
       <tr>
         <th>Bot</th>
         <th>Level</th>
+        <th>Cost</th>
         <th>Upgrade</th>
       </tr>
       `);
     this.model.bots.forEach(current => {
       this.size++;
+    //  console.log(current.costs)
       this.table.append(`
         <tr>
           <td>${ current.name }</td>
           <td id="level${ current.name }">${ current.level }</td>
+          <td id="cost${ current.name }">${ current.costs[current.level] }</td>
           <td><button id="upgrade${ current.name }">Upgrade</button></td>
         </tr>
         `);
+
+      $('#upgrade'+current.name).click(() => {
+        this.model.upgrade(this.findBotByName(current.name));
+      })
     });
+  }
+
+  findBotByName(name){
+    for(let i=0;i<this.model.bots.length; i++){
+      if(this.model.bots[i].name == name){
+        return this.model.bots[i];
+      }
+    }
   }
 
   update(){
@@ -72,6 +98,7 @@ module.exports = class {
     } else {
       this.model.bots.forEach(current => {
         $('#level'+current.name).text(current.level);
+        $('#cost'+current.name).text(current.costs[current.level]);
       });
     }
   }
@@ -86,11 +113,13 @@ class BotShopController {
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
-    this.Model      = new Model();
+    this.Model      = new Model( Portfolio );
     this.View       = new View( this.Model );
 
     this.Loop.addViewItem( this.View );
-    this.Loop.addRepeating(()=>{ this.Model.update(); }, 500);
+    this.Loop.addRepeating(() => {
+      this.Model.update();
+    }, 500);
   }
 }
 
@@ -109,6 +138,7 @@ module.exports = (Loop, Portfolio, Market) => {
     description: "this is a description",
     costs: [100,200,100,300],
     behaviour: function(){ console.log("test") },
+    level: 3
   });
 
   controller.Model.addBot({
@@ -207,14 +237,14 @@ module.exports = (loop, market) => {
 
 },{"./../model/Portfolio.js":11,"./../view/Portfolio.js":16}],8:[function(require,module,exports){
 $(document).ready(function() {
-  const GameConsole     = require('./view/Console.js')();
+  let GameConsole     = require('./view/Console.js')();
 
-  const Loop            = require('./model/Loop.js')();
+  let Loop            = require('./model/Loop.js')();
 
-  const Market          = require('./controller/Market.js')(Loop);
-  const Portfolio       = require('./controller/Portfolio.js')(Loop, Market);
-  const Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
-  const BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
+  let Market          = require('./controller/Market.js')(Loop);
+  let Portfolio       = require('./controller/Portfolio.js')(Loop, Market);
+  let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
+  let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
 });
 
 },{"./controller/BotShop.js":4,"./controller/Broker.js":5,"./controller/Market.js":6,"./controller/Portfolio.js":7,"./model/Loop.js":9,"./view/Console.js":14}],9:[function(require,module,exports){

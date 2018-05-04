@@ -2,9 +2,9 @@ module.exports = class {
   constructor (ops) {
     this.name         = ops.name;
     this.description  = ops.description;
-    this.costs        = ops.cost;
+    this.costs        = ops.costs;
     this.behaviour    = ops.behaviour;
-    this.level        = 0;
+    this.level        = ops.level || 0;
   }
 
   action() {
@@ -12,5 +12,4 @@ module.exports = class {
       this.behaviour(this);
     }
   }
-
 }

@@ -1,10 +1,10 @@
 $(document).ready(function() {
-  const GameConsole     = require('./view/Console.js')();
+  let GameConsole     = require('./view/Console.js')();
 
-  const Loop            = require('./model/Loop.js')();
+  let Loop            = require('./model/Loop.js')();
 
-  const Market          = require('./controller/Market.js')(Loop);
-  const Portfolio       = require('./controller/Portfolio.js')(Loop, Market);
-  const Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
-  const BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
+  let Market          = require('./controller/Market.js')(Loop);
+  let Portfolio       = require('./controller/Portfolio.js')(Loop, Market);
+  let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
+  let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
 });

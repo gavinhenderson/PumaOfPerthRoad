@@ -6,11 +6,13 @@ class BotShopController {
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
-    this.Model      = new Model();
+    this.Model      = new Model( Portfolio );
     this.View       = new View( this.Model );
 
     this.Loop.addViewItem( this.View );
-    this.Loop.addRepeating(()=>{ this.Model.update(); }, 500);
+    this.Loop.addRepeating(() => {
+      this.Model.update();
+    }, 500);
   }
 }
 
@@ -29,6 +31,7 @@ module.exports = (Loop, Portfolio, Market) => {
     description: "this is a description",
     costs: [100,200,100,300],
     behaviour: function(){ console.log("test") },
+    level: 3
   });
 
   controller.Model.addBot({
