@@ -33,7 +33,7 @@ module.exports = class{
   value(){
     let value = 0;
     this.stocks.forEach((stock)=>{
-      value += stock.stock.price;
+      value += stock.stock.price * stock.quantity;
     })
     return value;
   }

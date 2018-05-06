@@ -5,7 +5,7 @@ module.exports = {
   behaviour: function(bot, market, portfolio) {
     portfolio.stocks.forEach(current => {
       // console.log(current);
-      if(current.stock.momentum < -0.2){
+      if(current.stock.momentum < 0){
         portfolio.sell(current.stock, current.quantity);
       }
     });

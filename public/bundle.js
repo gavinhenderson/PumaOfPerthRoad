@@ -116,7 +116,7 @@ module.exports = {
     const buyingCaps = [10, 20, 30, 40, 50]; // Given in percentage of crash
     let currentCap = (portfolio.cash/100) * buyingCaps[bot.level];
     market.iterate((current)=>{
-      if(current.price < currentCap && current.momentum > 0.2){
+      if(current.price < currentCap && current.momentum > 0.6){
         currentCap -= current.price;
         portfolio.buy(current, 1);
         console.log(current.name + " was just bought by the auto buying bot")
@@ -133,7 +133,7 @@ module.exports = {
   behaviour: function(bot, market, portfolio) {
     portfolio.stocks.forEach(current => {
       // console.log(current);
-      if(current.stock.momentum < -0.2){
+      if(current.stock.momentum < 0){
         portfolio.sell(current.stock, current.quantity);
       }
     });
@@ -187,7 +187,25 @@ module.exports = (loop, market, portfolio) => {
   return new BrokerController(loop, market, portfolio);
 }
 
-},{"./../view/Broker.js":15}],8:[function(require,module,exports){
+},{"./../view/Broker.js":17}],8:[function(require,module,exports){
+const CalendarView = require('./../view/Calendar.js');
+const CalendarModel = require('./../model/Calendar.js');
+
+class CalendarController {
+  constructor(Loop){
+    this.model = new CalendarModel();
+    this.view = new CalendarView(this.model);
+    Loop.addViewItem(this.view);
+    Loop.addRepeating(()=>{ this.model.update() }, 100);
+  }
+}
+
+module.exports = (Loop) => {
+  let calender = new CalendarController(Loop);
+  return calender;
+}
+
+},{"./../model/Calendar.js":12,"./../view/Calendar.js":18}],9:[function(require,module,exports){
 const Market        = require('./../model/Market.js');
 const MarketViewer  = require('./../view/Market.js');
 const Stock         = require('./../model/Stock.js');
@@ -229,7 +247,7 @@ module.exports = (loop) => {
   return new MarketController(market, loop);
 }
 
-},{"./../model/Market.js":12,"./../model/Stock.js":14,"./../view/Market.js":17}],9:[function(require,module,exports){
+},{"./../model/Market.js":14,"./../model/Stock.js":16,"./../view/Market.js":20}],10:[function(require,module,exports){
 const PortfolioView  = require('./../view/Portfolio.js');
 const Portfolio      = require('./../model/Portfolio.js');
 
@@ -253,7 +271,7 @@ module.exports = (loop, market, GameConsole) => {
   return new PortfolioController(loop, market, GameConsole);
 }
 
-},{"./../model/Portfolio.js":13,"./../view/Portfolio.js":18}],10:[function(require,module,exports){
+},{"./../model/Portfolio.js":15,"./../view/Portfolio.js":21}],11:[function(require,module,exports){
 $(document).ready(function() {
   let GameConsole     = require('./view/Console.js')();
 
@@ -263,9 +281,25 @@ $(document).ready(function() {
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole);
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
+  let Calender        = require('./controller/Calendar.js')(Loop);
 });
 
-},{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Market.js":8,"./controller/Portfolio.js":9,"./model/Loop.js":11,"./view/Console.js":16}],11:[function(require,module,exports){
+},{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Calendar.js":8,"./controller/Market.js":9,"./controller/Portfolio.js":10,"./model/Loop.js":13,"./view/Console.js":19}],12:[function(require,module,exports){
+module.exports = class {
+  constructor(){
+    this.time = 0;
+  }
+
+  update(){
+    this.time++;
+  }
+
+  getTime(){
+    return this.time;
+  }
+}
+
+},{}],13:[function(require,module,exports){
 class Loop {
   constructor(){
     this.paused = false;
@@ -335,7 +369,7 @@ module.exports = () => {
   return new Loop();
 }
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = class{
 
   constructor(){
@@ -406,7 +440,7 @@ module.exports = class{
 
 }
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = class{
   constructor(cashValue, market, gameConsole){
     this.gameConsole = gameConsole;
@@ -442,7 +476,7 @@ module.exports = class{
   value(){
     let value = 0;
     this.stocks.forEach((stock)=>{
-      value += stock.stock.price;
+      value += stock.stock.price * stock.quantity;
     })
     return value;
   }
@@ -496,7 +530,7 @@ module.exports = class{
   }
 }
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = class {
   constructor(name, price, volatility){
     this.name = name;
@@ -511,7 +545,7 @@ module.exports = class {
     rand -= 10;
     rand = rand/10;
     this.momentum += rand;
-    if(this.momentum>0.8){ this.momentum = 0.8; }
+    if(this.momentum>2){ this.momentum = 2; }
     else if(this.momentum<-0.8){ this.momentum = -0.8; }
     this.price += this.momentum
     if(this.price<0){ this.price = 0;}
@@ -545,7 +579,7 @@ module.exports = class {
   }
 }
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = class{
   constructor(market, portfolio){
     this.market     = market;
@@ -632,7 +666,18 @@ module.exports = class{
   }
 }
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+module.exports = class {
+  constructor(calendar){
+    this.calendar = calendar;
+  }
+
+  update(){
+    console.log(this.calendar.getTime());
+  }
+}
+
+},{}],19:[function(require,module,exports){
 class Console{
   constructor(){
     this.consoleDomElement = $('#console');
@@ -656,7 +701,7 @@ module.exports = () => {
   return gameConsole;
 }
 
-},{}],17:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = class{
   constructor(market){
     this.market     = market;
@@ -705,7 +750,7 @@ module.exports = class{
   }
 }
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = class {
   constructor( portfolio ){
     this.portfolio      = portfolio;
@@ -773,4 +818,4 @@ module.exports = class {
   }
 }
 
-},{}]},{},[10]);
+},{}]},{},[11]);

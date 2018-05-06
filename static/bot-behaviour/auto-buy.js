@@ -6,7 +6,7 @@ module.exports = {
     const buyingCaps = [10, 20, 30, 40, 50]; // Given in percentage of crash
     let currentCap = (portfolio.cash/100) * buyingCaps[bot.level];
     market.iterate((current)=>{
-      if(current.price < currentCap && current.momentum > 0.2){
+      if(current.price < currentCap && current.momentum > 0.6){
         currentCap -= current.price;
         portfolio.buy(current, 1);
         console.log(current.name + " was just bought by the auto buying bot")

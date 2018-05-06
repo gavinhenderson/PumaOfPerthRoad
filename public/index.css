@@ -141,6 +141,7 @@ div.bot-shop{
   border-width: 2px;
   border-color: black;
   float: left;
+  margin-right: 5px;
 }
 
 h1.bot-shop{
@@ -152,6 +153,22 @@ h1.bot-shop{
 
 table.bot-shop{
   margin:0 auto;
+}
+
+div.calendar{
+  width:250px;
+  min-height:100px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  float: left;
+}
+
+h1.calendar{
+  text-align:center;
+  text-decoration: underline;
+  font-size: 20px;
+  margin: 0;
 }
 
 div.center{

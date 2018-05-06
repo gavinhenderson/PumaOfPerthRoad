@@ -7,4 +7,5 @@ $(document).ready(function() {
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole);
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
+  let Calender        = require('./controller/Calendar.js')(Loop);
 });
