@@ -2,8 +2,8 @@ const PortfolioView  = require('./../view/Portfolio.js');
 const Portfolio      = require('./../model/Portfolio.js');
 
 class PortfolioController{
-  constructor(loop, market){
-    this.model = new Portfolio(1000, market.getModel());
+  constructor(loop, market, GameConsole){
+    this.model = new Portfolio(1000, market.getModel(), GameConsole);
     this.view = new PortfolioView(this.model);
     loop.addViewItem(this.view);
   }
@@ -17,6 +17,6 @@ class PortfolioController{
   }
 }
 
-module.exports = (loop, market) => {
-  return new PortfolioController(loop, market);
+module.exports = (loop, market, GameConsole) => {
+  return new PortfolioController(loop, market, GameConsole);
 }

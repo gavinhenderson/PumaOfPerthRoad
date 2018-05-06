@@ -116,7 +116,7 @@ module.exports = {
     const buyingCaps = [10, 20, 30, 40, 50]; // Given in percentage of crash
     let currentCap = (portfolio.cash/100) * buyingCaps[bot.level];
     market.iterate((current)=>{
-      if(current.price < currentCap && current.momentum > 0){
+      if(current.price < currentCap && current.momentum > 0.2){
         currentCap -= current.price;
         portfolio.buy(current, 1);
         console.log(current.name + " was just bought by the auto buying bot")
@@ -131,7 +131,12 @@ module.exports = {
   description: "This bot will automatically sell stocks when they are crashing or when they are thriving",
   costs: [100,200,1000,3000],
   behaviour: function(bot, market, portfolio) {
-    console.log(bot.name);
+    portfolio.stocks.forEach(current => {
+      // console.log(current);
+      if(current.stock.momentum < -0.2){
+        portfolio.sell(current.stock, current.quantity);
+      }
+    });
   }
 }
 
@@ -229,8 +234,8 @@ const PortfolioView  = require('./../view/Portfolio.js');
 const Portfolio      = require('./../model/Portfolio.js');
 
 class PortfolioController{
-  constructor(loop, market){
-    this.model = new Portfolio(1000, market.getModel());
+  constructor(loop, market, GameConsole){
+    this.model = new Portfolio(1000, market.getModel(), GameConsole);
     this.view = new PortfolioView(this.model);
     loop.addViewItem(this.view);
   }
@@ -244,8 +249,8 @@ class PortfolioController{
   }
 }
 
-module.exports = (loop, market) => {
-  return new PortfolioController(loop, market);
+module.exports = (loop, market, GameConsole) => {
+  return new PortfolioController(loop, market, GameConsole);
 }
 
 },{"./../model/Portfolio.js":13,"./../view/Portfolio.js":18}],10:[function(require,module,exports){
@@ -255,7 +260,7 @@ $(document).ready(function() {
   let Loop            = require('./model/Loop.js')();
 
   let Market          = require('./controller/Market.js')(Loop);
-  let Portfolio       = require('./controller/Portfolio.js')(Loop, Market);
+  let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole);
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
 });
@@ -403,7 +408,8 @@ module.exports = class{
 
 },{}],13:[function(require,module,exports){
 module.exports = class{
-  constructor(cashValue, market){
+  constructor(cashValue, market, gameConsole){
+    this.gameConsole = gameConsole;
     this.market = market;
     this.stocks = [];
     this.cash = cashValue;
@@ -453,12 +459,12 @@ module.exports = class{
           this.cash += stock.price*quantity;
           return;
         }else{
-          console.message("You don't have enough of "+stock.name+" to sell");
+          this.gameConsole.message("You don't have enough of "+stock.name+" to sell");
           return
         }
       }
     }
-    console.message("You don't have any "+stock.name);
+    this.gameConsole.message("You don't have any "+stock.name);
   }
 
   save(){

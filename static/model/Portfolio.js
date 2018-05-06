@@ -1,5 +1,6 @@
 module.exports = class{
-  constructor(cashValue, market){
+  constructor(cashValue, market, gameConsole){
+    this.gameConsole = gameConsole;
     this.market = market;
     this.stocks = [];
     this.cash = cashValue;
@@ -49,12 +50,12 @@ module.exports = class{
           this.cash += stock.price*quantity;
           return;
         }else{
-          console.message("You don't have enough of "+stock.name+" to sell");
+          this.gameConsole.message("You don't have enough of "+stock.name+" to sell");
           return
         }
       }
     }
-    console.message("You don't have any "+stock.name);
+    this.gameConsole.message("You don't have any "+stock.name);
   }
 
   save(){
