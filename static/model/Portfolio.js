@@ -31,9 +31,9 @@ module.exports = class{
   }
 
   value(){
-    var value = 0;
+    let value = 0;
     this.stocks.forEach((stock)=>{
-      value += stock.price;
+      value += stock.stock.price;
     })
     return value;
   }

@@ -12,7 +12,7 @@ class BotShopController {
     this.Loop.addViewItem( this.View );
     this.Loop.addRepeating(() => {
       this.Model.update();
-    }, 500);
+    }, 3000);
   }
 }
 

@@ -44,7 +44,12 @@ module.exports = class {
 
   update(){
     // Always reset cash value
-    $('#cash-value').text(this.portfolio.cash.toFixed(2));
+    let cashValue = this.portfolio.cash;
+    let stockValue = this.portfolio.value();
+    let totalValue = (cashValue + stockValue);
+    $('#cash-value').text(cashValue.toFixed(2));
+    $('#stock-value').text(stockValue.toFixed(2));
+    $('#total-value').text(totalValue.toFixed(2));
 
     // Only repopulate if stocks have changed
     if(this.portfolioSize != this.portfolio.stocks.length){
