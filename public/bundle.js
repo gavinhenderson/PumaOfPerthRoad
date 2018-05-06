@@ -8,9 +8,9 @@ module.exports = class {
     this.level        = ops.level || 0;
   }
 
-  action() {
+  action(market, portfolio) {
     if(this.level>0){
-      this.behaviour(this);
+      this.behaviour(this, market, portfolio);
     }
   }
 }
@@ -19,8 +19,9 @@ module.exports = class {
 const Bot = require('./Bot.js');
 
 module.exports = class {
-  constructor ( portfolio ) {
+  constructor ( market, portfolio ) {
     this.portfolio = portfolio.model;
+    this.market    = market.model;
     this.bots = [];
   }
 
@@ -30,7 +31,7 @@ module.exports = class {
 
   update () {
     this.bots.forEach(current => {
-      current.action();
+      current.action(this.market, this.portfolio);
     })
   }
 
@@ -112,7 +113,15 @@ module.exports = {
   description: "This bot will automatically buy stocks when they are about to make a lot of money",
   costs: [100,200,500,3000],
   behaviour: function(bot, market, portfolio) {
-    console.log(bot.name);
+    const buyingCaps = [10, 20, 30, 40, 50]; // Given in percentage of crash
+    let currentCap = (portfolio.cash/100) * buyingCaps[bot.level];
+    market.iterate((current)=>{
+      if(current.price < currentCap && current.momentum > 0){
+        currentCap -= current.price;
+        portfolio.buy(current, 1);
+        console.log(current.name + " was just bought by the auto buying bot")
+      }
+    })
   }
 }
 
