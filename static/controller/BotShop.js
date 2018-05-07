@@ -14,14 +14,26 @@ class BotShopController {
       this.Model.update();
     }, 3000);
   }
+
+  getSaveInfo(){
+    return this.Model.getSaveInfo();
+  }
 }
 
-module.exports = (Loop, Portfolio, Market) => {
+module.exports = (Loop, Portfolio, Market, GameSave) => {
   let controller =  new BotShopController(Loop, Portfolio, Market);
 
   // Bots defined externally
   controller.Model.addBot(require('./../bot-behaviour/auto-sell.js'));
   controller.Model.addBot(require('./../bot-behaviour/auto-buy.js'));
+
+  if(GameSave != undefined){
+    if(GameSave.BotShop != undefined){
+      GameSave.BotShop.forEach(current => {
+        controller.Model.setLevel(current.name, current.level);
+      })
+    }
+  }
 
   return controller;
 }

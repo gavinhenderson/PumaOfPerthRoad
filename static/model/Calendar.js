@@ -6,6 +6,12 @@ module.exports = class {
     this.minute   = 0;
   }
 
+  loadTime(time){
+    this.day = time.day;
+    this.hour = time.hour;
+    this.minute = time.minute;
+  }
+
   update(){
     this.minute += 5;
 
@@ -37,5 +43,14 @@ module.exports = class {
       postfix = "PM"
     }
     return realHour + ":" + ("0" + this.minute).slice(-2) + " " + postfix;
+  }
+
+  getSaveInfo(){
+    let tempObj = {
+      day: this.day,
+      hour: this.hour,
+      minute: this.minute
+    }
+    return tempObj
   }
 }

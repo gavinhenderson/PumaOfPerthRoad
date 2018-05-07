@@ -6,6 +6,14 @@ module.exports = class{
     this.cash = cashValue;
   }
 
+  load(addStock, quantity){
+    this.stocks.push({
+      'stock': addStock,
+      'quantity': parseInt(quantity),
+      'buyprice': addStock.price
+    })
+  }
+
   buy(addStock, quantity){
     if(addStock.price*quantity>this.cash){
       console.message("You have insufficent funds to buy "+addStock.name);
@@ -58,7 +66,22 @@ module.exports = class{
     this.gameConsole.message("You don't have any "+stock.name);
   }
 
-  save(){
+  getSaveInfo(){
+    let tempObj     = {}
+    tempObj.cash    = this.cash;
+    tempObj.stocks  = [];
+
+    this.stocks.forEach(current => {
+      let tempStock = {};
+      tempStock.quantity  = current.quantity;
+      tempStock.stockName = current.stock.name;
+      tempObj.stocks.push(tempStock);
+    });
+
+    return tempObj;
+  }
+
+  /*save(){
     localStorage.setItem('portfolio.cashValue',this.cash);
     var stocks = [];
     this.stocks.forEach(current=>{
@@ -84,5 +107,5 @@ module.exports = class{
       }
       this.stocks.push(temp)
     })
-  }
+  }*/
 }

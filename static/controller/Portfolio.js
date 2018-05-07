@@ -15,8 +15,25 @@ class PortfolioController{
   getModel(){
     return this.model;
   }
+
+  getSaveInfo(){
+    return this.model.getSaveInfo();
+  }
 }
 
-module.exports = (loop, market, GameConsole) => {
-  return new PortfolioController(loop, market, GameConsole);
+module.exports = (loop, market, GameConsole, GameSave) => {
+  let PortController = new PortfolioController(loop, market, GameConsole);
+
+  if(GameSave != undefined){
+    if(GameSave.Portfolio != undefined){
+      PortController.model.cash = GameSave.Portfolio.cash;
+      GameSave.Portfolio.stocks.forEach(current => {
+        //console.log(current)
+        let stock = market.getModel().getStock(current.stockName);
+        PortController.model.load(stock, current.quantity);
+      })
+    }
+  }
+
+  return PortController;
 }

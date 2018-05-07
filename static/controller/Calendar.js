@@ -8,9 +8,20 @@ class CalendarController {
     Loop.addViewItem(this.view);
     Loop.addRepeating(()=>{ this.model.update() }, 100);
   }
+
+  getSaveInfo(){
+    return this.model.getSaveInfo();
+  }
 }
 
-module.exports = (Loop) => {
+module.exports = (Loop, GameSave) => {
   let calender = new CalendarController(Loop);
+
+  if(GameSave != undefined){
+    if(GameSave.Calendar != undefined){
+      calender.model.loadTime(GameSave.Calendar);
+    }
+  }
+
   return calender;
 }

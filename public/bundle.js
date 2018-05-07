@@ -25,6 +25,15 @@ module.exports = class {
     this.bots = [];
   }
 
+  setLevel(name, level){
+    for(let i=0; i<this.bots.length; i++){
+      if(this.bots[i].name == name){
+        this.bots[i].level = level;
+        return;
+      }
+    }
+  }
+
   addBot(ops){
     this.bots.push(new Bot(ops));
   }
@@ -40,6 +49,20 @@ module.exports = class {
       this.portfolio.cash -= bot.costs[bot.level];
       bot.level ++;
     }
+  }
+
+  getSaveInfo(){
+    let tempArr = [];
+
+    this.bots.forEach(current => {
+      let tempObj = {
+        name: current.name,
+        level: current.level
+      }
+      tempArr.push(tempObj)
+    });
+
+    return tempArr;
   }
 }
 
@@ -157,14 +180,26 @@ class BotShopController {
       this.Model.update();
     }, 3000);
   }
+
+  getSaveInfo(){
+    return this.Model.getSaveInfo();
+  }
 }
 
-module.exports = (Loop, Portfolio, Market) => {
+module.exports = (Loop, Portfolio, Market, GameSave) => {
   let controller =  new BotShopController(Loop, Portfolio, Market);
 
   // Bots defined externally
   controller.Model.addBot(require('./../bot-behaviour/auto-sell.js'));
   controller.Model.addBot(require('./../bot-behaviour/auto-buy.js'));
+
+  if(GameSave != undefined){
+    if(GameSave.BotShop != undefined){
+      GameSave.BotShop.forEach(current => {
+        controller.Model.setLevel(current.name, current.level);
+      })
+    }
+  }
 
   return controller;
 }
@@ -198,10 +233,21 @@ class CalendarController {
     Loop.addViewItem(this.view);
     Loop.addRepeating(()=>{ this.model.update() }, 100);
   }
+
+  getSaveInfo(){
+    return this.model.getSaveInfo();
+  }
 }
 
-module.exports = (Loop) => {
+module.exports = (Loop, GameSave) => {
   let calender = new CalendarController(Loop);
+
+  if(GameSave != undefined){
+    if(GameSave.Calendar != undefined){
+      calender.model.loadTime(GameSave.Calendar);
+    }
+  }
+
   return calender;
 }
 
@@ -276,10 +322,27 @@ class PortfolioController{
   getModel(){
     return this.model;
   }
+
+  getSaveInfo(){
+    return this.model.getSaveInfo();
+  }
 }
 
-module.exports = (loop, market, GameConsole) => {
-  return new PortfolioController(loop, market, GameConsole);
+module.exports = (loop, market, GameConsole, GameSave) => {
+  let PortController = new PortfolioController(loop, market, GameConsole);
+
+  if(GameSave != undefined){
+    if(GameSave.Portfolio != undefined){
+      PortController.model.cash = GameSave.Portfolio.cash;
+      GameSave.Portfolio.stocks.forEach(current => {
+        //console.log(current)
+        let stock = market.getModel().getStock(current.stockName);
+        PortController.model.load(stock, current.quantity);
+      })
+    }
+  }
+
+  return PortController;
 }
 
 },{"./../model/Portfolio.js":15,"./../view/Portfolio.js":21}],11:[function(require,module,exports){
@@ -290,17 +353,18 @@ $(document).ready(function() {
   let GameSave        = store.get('GameSave');
 
   let Market          = require('./controller/Market.js')(Loop, GameSave);
-  let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole);
+  let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole, GameSave);
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
-  let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
-  let Calender        = require('./controller/Calendar.js')(Loop);
+  let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, GameSave);
+  let Calendar        = require('./controller/Calendar.js')(Loop, GameSave);
 
   Loop.addRepeating(() => {
+    GameConsole.message('Auto-Saver: Your game was saved')
     let saveGame = {};
     saveGame.Market     = Market.getSaveInfo();
-    //saveGame.Portfolio  = Portfolio.getSaveInfo();
-    //saveGame.BotShop    = BotShop.getSaveInfo();
-    //saveGame.Calender   = Calendar.getSaveInfo();
+    saveGame.Portfolio  = Portfolio.getSaveInfo();
+    saveGame.BotShop    = BotShop.getSaveInfo();
+    saveGame.Calendar   = Calendar.getSaveInfo();
     store.set('GameSave', saveGame);
   }, 10000);
 });
@@ -312,6 +376,12 @@ module.exports = class {
     this.day      = 0;
     this.hour     = 0;
     this.minute   = 0;
+  }
+
+  loadTime(time){
+    this.day = time.day;
+    this.hour = time.hour;
+    this.minute = time.minute;
   }
 
   update(){
@@ -345,6 +415,15 @@ module.exports = class {
       postfix = "PM"
     }
     return realHour + ":" + ("0" + this.minute).slice(-2) + " " + postfix;
+  }
+
+  getSaveInfo(){
+    let tempObj = {
+      day: this.day,
+      hour: this.hour,
+      minute: this.minute
+    }
+    return tempObj
   }
 }
 
@@ -484,6 +563,14 @@ module.exports = class{
     this.cash = cashValue;
   }
 
+  load(addStock, quantity){
+    this.stocks.push({
+      'stock': addStock,
+      'quantity': parseInt(quantity),
+      'buyprice': addStock.price
+    })
+  }
+
   buy(addStock, quantity){
     if(addStock.price*quantity>this.cash){
       console.message("You have insufficent funds to buy "+addStock.name);
@@ -536,7 +623,22 @@ module.exports = class{
     this.gameConsole.message("You don't have any "+stock.name);
   }
 
-  save(){
+  getSaveInfo(){
+    let tempObj     = {}
+    tempObj.cash    = this.cash;
+    tempObj.stocks  = [];
+
+    this.stocks.forEach(current => {
+      let tempStock = {};
+      tempStock.quantity  = current.quantity;
+      tempStock.stockName = current.stock.name;
+      tempObj.stocks.push(tempStock);
+    });
+
+    return tempObj;
+  }
+
+  /*save(){
     localStorage.setItem('portfolio.cashValue',this.cash);
     var stocks = [];
     this.stocks.forEach(current=>{
@@ -562,7 +664,7 @@ module.exports = class{
       }
       this.stocks.push(temp)
     })
-  }
+  }*/
 }
 
 },{}],16:[function(require,module,exports){
