@@ -171,6 +171,12 @@ h1.calendar{
   margin: 0;
 }
 
+h2.calendar{
+  text-align: center;
+  font-size:20px;
+  margin:0;
+}
+
 div.center{
   margin:auto 0;
   text-align:center;

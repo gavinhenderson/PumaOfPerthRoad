@@ -287,15 +287,38 @@ $(document).ready(function() {
 },{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Calendar.js":8,"./controller/Market.js":9,"./controller/Portfolio.js":10,"./model/Loop.js":13,"./view/Console.js":19}],12:[function(require,module,exports){
 module.exports = class {
   constructor(){
-    this.time = 0;
+    this.day      = 0;
+    this.hour     = 0;
+    this.minute   = 0;
   }
 
   update(){
-    this.time++;
+    this.minute += 5;
+
+    if((this.minute % 60) == 0 && this.minute != 0){
+      this.minute = 0;
+      this.hour ++;
+    }
+
+    if((this.hour % 8) == 0 && this.hour != 0){
+      this.hour = 0;
+      this.day ++;
+    }
+  }
+
+  getDay(){
+    return this.day;
   }
 
   getTime(){
-    return this.time;
+    let postfix   = "AM"
+    let realHour  = this.hour + 9;
+    if(realHour == 12){ postfix = "PM"; }
+    if(realHour > 12){
+      realHour -= 12;
+      postfix = "PM"
+    }
+    return realHour + ":" + ("0" + this.minute).slice(-2) + " " + postfix;
   }
 }
 
@@ -673,7 +696,8 @@ module.exports = class {
   }
 
   update(){
-    console.log(this.calendar.getTime());
+    $('#day').text("Day "+this.calendar.getDay());
+    $('#time').text(this.calendar.getTime())
   }
 }
 

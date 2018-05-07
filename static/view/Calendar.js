@@ -4,6 +4,7 @@ module.exports = class {
   }
 
   update(){
-    console.log(this.calendar.getTime());
+    $('#day').text("Day "+this.calendar.getDay());
+    $('#time').text(this.calendar.getTime())
   }
 }
