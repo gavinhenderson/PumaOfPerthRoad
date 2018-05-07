@@ -13,6 +13,10 @@ class Loop {
     },100)
   }
 
+  pause(){
+    this.paused = !this.paused;
+  }
+
   addViewItem(item){
     this.views.push(item);
   }

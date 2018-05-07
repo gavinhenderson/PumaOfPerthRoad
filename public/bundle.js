@@ -193,7 +193,7 @@ const CalendarModel = require('./../model/Calendar.js');
 
 class CalendarController {
   constructor(Loop){
-    this.model = new CalendarModel();
+    this.model = new CalendarModel(Loop);
     this.view = new CalendarView(this.model);
     Loop.addViewItem(this.view);
     Loop.addRepeating(()=>{ this.model.update() }, 100);
@@ -286,7 +286,8 @@ $(document).ready(function() {
 
 },{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Calendar.js":8,"./controller/Market.js":9,"./controller/Portfolio.js":10,"./model/Loop.js":13,"./view/Console.js":19}],12:[function(require,module,exports){
 module.exports = class {
-  constructor(){
+  constructor(Loop){
+    this.loop     = Loop;
     this.day      = 0;
     this.hour     = 0;
     this.minute   = 0;
@@ -304,6 +305,10 @@ module.exports = class {
       this.hour = 0;
       this.day ++;
     }
+  }
+
+  pause(){
+    this.loop.pause();
   }
 
   getDay(){
@@ -336,6 +341,10 @@ class Loop {
         this.runWaiting();
       }
     },100)
+  }
+
+  pause(){
+    this.paused = !this.paused;
   }
 
   addViewItem(item){
@@ -569,7 +578,7 @@ module.exports = class {
     rand = rand/10;
     this.momentum += rand;
     if(this.momentum>2){ this.momentum = 2; }
-    else if(this.momentum<-0.8){ this.momentum = -0.8; }
+    else if(this.momentum<-2){ this.momentum = -2; }
     this.price += this.momentum
     if(this.price<0){ this.price = 0;}
 
@@ -693,6 +702,15 @@ module.exports = class{
 module.exports = class {
   constructor(calendar){
     this.calendar = calendar;
+    this.paused = false;
+
+    $('#pause-game').click(() => {
+      this.calendar.pause();
+      this.paused = !this.paused;
+
+      $('#pause-game').text(this.paused ? "Pause" : "Resume");
+
+    });
   }
 
   update(){

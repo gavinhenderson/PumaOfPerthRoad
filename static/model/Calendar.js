@@ -1,5 +1,6 @@
 module.exports = class {
-  constructor(){
+  constructor(Loop){
+    this.loop     = Loop;
     this.day      = 0;
     this.hour     = 0;
     this.minute   = 0;
@@ -17,6 +18,10 @@ module.exports = class {
       this.hour = 0;
       this.day ++;
     }
+  }
+
+  pause(){
+    this.loop.pause();
   }
 
   getDay(){

@@ -13,7 +13,7 @@ module.exports = class {
     rand = rand/10;
     this.momentum += rand;
     if(this.momentum>2){ this.momentum = 2; }
-    else if(this.momentum<-0.8){ this.momentum = -0.8; }
+    else if(this.momentum<-2){ this.momentum = -2; }
     this.price += this.momentum
     if(this.price<0){ this.price = 0;}
 
