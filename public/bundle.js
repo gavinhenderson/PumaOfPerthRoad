@@ -222,26 +222,37 @@ class MarketController {
   getModel(){
     return this.model;
   }
+
+  getSaveInfo(){
+    return this.model.getSaveInfo();
+  }
 }
 
-module.exports = (loop) => {
+module.exports = (loop, marketSave) => {
   // Create Market and Populate it
   let market = new Market();
-  market.addStock(new Stock("ESNT", 478,2));
-  market.addStock(new Stock("OXIG", 788, 2));
-  market.addStock(new Stock("ACA", 141, 2));
-  market.addStock(new Stock("HWDN", 501, 2));
-  market.addStock(new Stock("DRX", 264, 2));
-  market.addStock(new Stock("MNDI", 1911, 2));
-  market.addStock(new Stock("SRE", 55, 2));
-  market.addStock(new Stock("RTO", 272, 2));
-  market.addStock(new Stock("GYM", 250, 2));
-  market.addStock(new Stock("RRS", 5940,2));
-  market.addStock(new Stock("MTC", 21, 2));
-  market.addStock(new Stock("ARW", 350, 2));
-  market.addStock(new Stock("IMI", 1124, 2));
-  market.addStock(new Stock("SGC", 129, 2));
-  market.addStock(new Stock("FFN", 196, 2));
+
+  if(marketSave == undefined){
+    market.addStock(new Stock({ name:"ESNT", price:478,  volatility:2 }));
+    market.addStock(new Stock({ name:"OXIG", price:788,  volatility:2 }));
+    market.addStock(new Stock({ name:"ACA",  price:141,  volatility:2 }));
+    market.addStock(new Stock({ name:"HWDN", price:501,  volatility:2 }));
+    market.addStock(new Stock({ name:"DRX",  price:264,  volatility:2 }));
+    market.addStock(new Stock({ name:"MNDI", price:1911, volatility:2 }));
+    market.addStock(new Stock({ name:"SRE",  price:55,   volatility:2 }));
+    market.addStock(new Stock({ name:"RTO",  price:272,  volatility:2 }));
+    market.addStock(new Stock({ name:"GYM",  price:250,  volatility:2 }));
+    market.addStock(new Stock({ name:"RRS",  price:5940, volatility:2 }));
+    market.addStock(new Stock({ name:"MTC",  price:21,   volatility:2 }));
+    market.addStock(new Stock({ name:"ARW",  price:350,  volatility:2 }));
+    market.addStock(new Stock({ name:"IMI",  price:1124, volatility:2 }));
+    market.addStock(new Stock({ name:"SGC",  price:129,  volatility:2 }));
+    market.addStock(new Stock({ name:"FFN",  price:196,  volatility:2 }));
+  } else {
+    marketSave.Market.forEach(current => {
+      market.addStock(new Stock(current));
+    })
+  }
 
   // Return the controller
   return new MarketController(market, loop);
@@ -274,14 +285,24 @@ module.exports = (loop, market, GameConsole) => {
 },{"./../model/Portfolio.js":15,"./../view/Portfolio.js":21}],11:[function(require,module,exports){
 $(document).ready(function() {
   let GameConsole     = require('./view/Console.js')();
-
   let Loop            = require('./model/Loop.js')();
 
-  let Market          = require('./controller/Market.js')(Loop);
+  let GameSave        = store.get('GameSave');
+
+  let Market          = require('./controller/Market.js')(Loop, GameSave);
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole);
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market);
   let Calender        = require('./controller/Calendar.js')(Loop);
+
+  Loop.addRepeating(() => {
+    let saveGame = {};
+    saveGame.Market     = Market.getSaveInfo();
+    //saveGame.Portfolio  = Portfolio.getSaveInfo();
+    //saveGame.BotShop    = BotShop.getSaveInfo();
+    //saveGame.Calender   = Calendar.getSaveInfo();
+    store.set('GameSave', saveGame);
+  }, 10000);
 });
 
 },{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Calendar.js":8,"./controller/Market.js":9,"./controller/Portfolio.js":10,"./model/Loop.js":13,"./view/Console.js":19}],12:[function(require,module,exports){
@@ -444,30 +465,12 @@ module.exports = class{
     }
   }
 
-  save(){
-    var serialisedStocks = [];
-
-    this.iterate(function(stock){
-      var temp = {
-        name: stock.name,
-        price: stock.price,
-        momentum: stock.momentum,
-        volatility: stock.volatility,
-        history: stock.history
-      }
-      serialisedStocks.push(temp);
+  getSaveInfo(){
+    let stockArr = [];
+    this.iterate(current => {
+      stockArr.push(current.getSaveInfo());
     })
-    localStorage.setItem('market',JSON.stringify(serialisedStocks));
-  }
-
-  load(){
-    var serialisedStocks = JSON.parse(localStorage.getItem('market'));
-    serialisedStocks.forEach(current=>{
-      var nStock = new Stock(current.name, current.price, current.volatility);
-      nStock.momentum = current.momentum;
-      nStock.history = current.history;
-      this.stocks.push(nStock);
-    });
+    return stockArr;
   }
 
 }
@@ -564,12 +567,12 @@ module.exports = class{
 
 },{}],16:[function(require,module,exports){
 module.exports = class {
-  constructor(name, price, volatility){
-    this.name = name;
-    this.price = price;
-    this.momentum = 0;
-    this.volatility = volatility;
-    this.history = [];
+  constructor( ops ){
+    this.name         = ops.name;
+    this.price        = ops.price;
+    this.momentum     = ops.momentum || 0;
+    this.volatility   = ops.volatility;
+    this.history      = ops.history || [];
   }
 
   update(){
@@ -608,6 +611,16 @@ module.exports = class {
 
   getDiff(){
     return this.price - this.history[0];
+  }
+
+  getSaveInfo(){
+    let tempObj = {}
+    tempObj.name        = this.name;
+    tempObj.price       = this.price;
+    tempObj.momentum    = this.momentum;
+    tempObj.volatility  = this.volatility;
+    tempObj.history     = this.history;
+    return tempObj;
   }
 }
 
@@ -708,9 +721,13 @@ module.exports = class {
       this.calendar.pause();
       this.paused = !this.paused;
 
-      $('#pause-game').text(this.paused ? "Pause" : "Resume");
-
+      $('#pause-game').text(this.paused ? "Resume" : "Pause");
     });
+
+    $('#reset-game').click(() => {
+      localStorage.clear();
+      location.reload();
+    })
   }
 
   update(){

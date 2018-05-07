@@ -14,26 +14,37 @@ class MarketController {
   getModel(){
     return this.model;
   }
+
+  getSaveInfo(){
+    return this.model.getSaveInfo();
+  }
 }
 
-module.exports = (loop) => {
+module.exports = (loop, marketSave) => {
   // Create Market and Populate it
   let market = new Market();
-  market.addStock(new Stock("ESNT", 478,2));
-  market.addStock(new Stock("OXIG", 788, 2));
-  market.addStock(new Stock("ACA", 141, 2));
-  market.addStock(new Stock("HWDN", 501, 2));
-  market.addStock(new Stock("DRX", 264, 2));
-  market.addStock(new Stock("MNDI", 1911, 2));
-  market.addStock(new Stock("SRE", 55, 2));
-  market.addStock(new Stock("RTO", 272, 2));
-  market.addStock(new Stock("GYM", 250, 2));
-  market.addStock(new Stock("RRS", 5940,2));
-  market.addStock(new Stock("MTC", 21, 2));
-  market.addStock(new Stock("ARW", 350, 2));
-  market.addStock(new Stock("IMI", 1124, 2));
-  market.addStock(new Stock("SGC", 129, 2));
-  market.addStock(new Stock("FFN", 196, 2));
+
+  if(marketSave == undefined){
+    market.addStock(new Stock({ name:"ESNT", price:478,  volatility:2 }));
+    market.addStock(new Stock({ name:"OXIG", price:788,  volatility:2 }));
+    market.addStock(new Stock({ name:"ACA",  price:141,  volatility:2 }));
+    market.addStock(new Stock({ name:"HWDN", price:501,  volatility:2 }));
+    market.addStock(new Stock({ name:"DRX",  price:264,  volatility:2 }));
+    market.addStock(new Stock({ name:"MNDI", price:1911, volatility:2 }));
+    market.addStock(new Stock({ name:"SRE",  price:55,   volatility:2 }));
+    market.addStock(new Stock({ name:"RTO",  price:272,  volatility:2 }));
+    market.addStock(new Stock({ name:"GYM",  price:250,  volatility:2 }));
+    market.addStock(new Stock({ name:"RRS",  price:5940, volatility:2 }));
+    market.addStock(new Stock({ name:"MTC",  price:21,   volatility:2 }));
+    market.addStock(new Stock({ name:"ARW",  price:350,  volatility:2 }));
+    market.addStock(new Stock({ name:"IMI",  price:1124, volatility:2 }));
+    market.addStock(new Stock({ name:"SGC",  price:129,  volatility:2 }));
+    market.addStock(new Stock({ name:"FFN",  price:196,  volatility:2 }));
+  } else {
+    marketSave.Market.forEach(current => {
+      market.addStock(new Stock(current));
+    })
+  }
 
   // Return the controller
   return new MarketController(market, loop);

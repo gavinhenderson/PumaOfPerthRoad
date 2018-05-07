@@ -7,9 +7,13 @@ module.exports = class {
       this.calendar.pause();
       this.paused = !this.paused;
 
-      $('#pause-game').text(this.paused ? "Pause" : "Resume");
-
+      $('#pause-game').text(this.paused ? "Resume" : "Pause");
     });
+
+    $('#reset-game').click(() => {
+      localStorage.clear();
+      location.reload();
+    })
   }
 
   update(){

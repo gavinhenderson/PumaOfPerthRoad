@@ -1,10 +1,10 @@
 module.exports = class {
-  constructor(name, price, volatility){
-    this.name = name;
-    this.price = price;
-    this.momentum = 0;
-    this.volatility = volatility;
-    this.history = [];
+  constructor( ops ){
+    this.name         = ops.name;
+    this.price        = ops.price;
+    this.momentum     = ops.momentum || 0;
+    this.volatility   = ops.volatility;
+    this.history      = ops.history || [];
   }
 
   update(){
@@ -43,5 +43,15 @@ module.exports = class {
 
   getDiff(){
     return this.price - this.history[0];
+  }
+
+  getSaveInfo(){
+    let tempObj = {}
+    tempObj.name        = this.name;
+    tempObj.price       = this.price;
+    tempObj.momentum    = this.momentum;
+    tempObj.volatility  = this.volatility;
+    tempObj.history     = this.history;
+    return tempObj;
   }
 }
