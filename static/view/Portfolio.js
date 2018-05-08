@@ -12,14 +12,17 @@ module.exports = class {
     // Empty the list and add headers
     var portfolioListDOM = $('#portfolio-list');
     portfolioListDOM.empty();
-    portfolioListDOM.append(`
-      <tr>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Total</th>
-        <th>Amount</th>
-      </tr>
-    `);
+
+    if(this.portfolio.stocks.length != 0){
+      portfolioListDOM.append(`
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Total</th>
+          <th>Amount</th>
+        </tr>
+      `);
+    }
 
     // Loop through owned stocks and add them to table.
     this.portfolio.stocks.forEach((current) => {

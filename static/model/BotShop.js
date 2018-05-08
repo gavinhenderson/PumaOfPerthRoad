@@ -28,6 +28,7 @@ module.exports = class {
 
   upgrade(bot){
     if(this.portfolio.cash >= bot.costs[bot.level]){
+      new Audio('./sounds/robot.mp3').play()
       this.portfolio.cash -= bot.costs[bot.level];
       bot.level ++;
     }

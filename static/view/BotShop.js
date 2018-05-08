@@ -23,7 +23,7 @@ module.exports = class {
         <tr>
           <td class="center">${ current.name }</td>
           <td class="center" id="level${ current.name }">${ current.level }</td>
-          <td class="center" id="cost${ current.name }">${ current.costs[current.level] }</td>
+          <td class="center">$<p class="no-new-line" id="cost${ current.name }">${ current.costs[current.level] }</p></td>
           <td class="center"><button id="upgrade${ current.name }">Upgrade</button></td>
         </tr>
         `);

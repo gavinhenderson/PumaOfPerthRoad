@@ -52,10 +52,12 @@ module.exports = class{
         if(this.stocks[i].quantity-quantity>0){
           this.stocks[i].quantity -= quantity;
           this.cash += stock.price*quantity;
+          new Audio('./sounds/money.mp3').play()
           return;
         }else if (this.stocks[i].quantity-quantity==0){
           this.stocks.splice(i,1);
           this.cash += stock.price*quantity;
+          new Audio('./sounds/money.mp3').play()
           return;
         }else{
           this.gameConsole.message("You don't have enough of "+stock.name+" to sell");

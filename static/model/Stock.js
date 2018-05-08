@@ -30,6 +30,8 @@ module.exports = class {
       }
     }
 
+    if(this.price < 0){ this.price = 0; }
+
     this.addHistory(this.price);
   }
 

@@ -9,6 +9,7 @@ $(document).ready(function() {
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, GameSave);
   let Calendar        = require('./controller/Calendar.js')(Loop, Portfolio, GameConsole, GameSave);
+  let OddJobs         = require('./controller/OddJobs.js')(Loop, Portfolio);
 
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
