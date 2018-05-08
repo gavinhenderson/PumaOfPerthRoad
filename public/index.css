@@ -5,7 +5,14 @@
 
 body{
   margin-bottom: 200px;
-  width: 100%
+  width: 100%;
+  background-image: url("background.jpg");
+}
+
+div.window {
+  background-image: url("window.jpg");
+  background-size: 100% 100%;
+  padding: 10px;
 }
 
 .align-left{
@@ -185,6 +192,26 @@ table.calendar{
 div.center{
   margin:auto 0;
   text-align:center;
+}
+
+div.floating{
+  position: absolute;
+  width:250px;
+  min-height:100px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  text-align: center;
+  background-color: #FFFFFF;
+  top: 20px;
+  left: 50%;
+}
+
+h1.floating{
+  text-align: center;
+  text-decoration: underline;
+  font-size: 25px;
+  margin:0;
 }
 
 .center{

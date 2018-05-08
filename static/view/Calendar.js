@@ -1,5 +1,6 @@
 module.exports = class {
-  constructor(calendar){
+  constructor(calendar, loop){
+    this.loop = loop;
     this.calendar = calendar;
     this.paused = false;
 
@@ -17,6 +18,7 @@ module.exports = class {
 
     this.showingLength = 0;
     this.repopulate();
+    this.prevDay = 0;
   }
 
   repopulate(){
@@ -42,6 +44,43 @@ module.exports = class {
         `);
         this.showingLength++;
       }
+    });
+  }
+
+  dayEnd() {
+    this.loop.pause();
+
+    let floatingDiv = `
+      <div class="floating window" id="popup">
+        <h1 class="floating">Day End - Summary</h1>
+        <table class="floating">`
+
+    let total = 0;
+    this.calendar.dailyExpenditures.forEach(current => {
+      if(current.daysLeft == current.reoccuring){
+        floatingDiv += `
+        <tr>
+          <td>${ current.name }</td>
+          <td>${ current.cost }</td>
+        </tr>`
+        total += current.cost;
+      }
+    })
+
+    floatingDiv += `
+      <tr>
+        <td>Total</td>
+        <td>${ total }</td>
+      </tr>
+      </table>
+      <button id="remove-popup">Continue</button>
+    </div>`
+
+    $('#wrapper').append(floatingDiv);
+
+    $('#remove-popup').click(() => {
+      $('#popup').remove();
+      this.loop.pause();
     })
   }
 
@@ -49,5 +88,10 @@ module.exports = class {
     $('#day').text("Day "+this.calendar.getDay());
     $('#time').text(this.calendar.getTime())
     this.repopulate();
+
+    if(this.prevDay != this.calendar.day){
+      this.dayEnd();
+      this.prevDay = this.calendar.day;
+    }
   }
 }

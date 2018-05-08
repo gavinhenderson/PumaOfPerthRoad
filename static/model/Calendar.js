@@ -1,10 +1,11 @@
 module.exports = class {
-  constructor(Loop, Portfolio){
-    this.portfolio  = Portfolio.model;
-    this.loop       = Loop;
-    this.day        = 0;
-    this.hour       = 0;
-    this.minute     = 0;
+  constructor(Loop, Portfolio, GameConsole){
+    this.GameConsole = GameConsole;
+    this.portfolio   = Portfolio.model;
+    this.loop        = Loop;
+    this.day         = 0;
+    this.hour        = 0;
+    this.minute      = 0;
     this.dailyExpenditures = [{
       name:         "Mortgage",
       description:  "Gotta keep make sure you keep your house",
@@ -56,7 +57,9 @@ module.exports = class {
     this.dailyExpenditures.forEach(current => {
       current.daysLeft--;
       if(current.daysLeft == 0){
-        //console.log("Day end")
+        if(current.hidden){
+          this.GameConsole.message(`You have been charged $${ current.cost } for ${ current.name }.`);
+        }
         this.portfolio.cash -= current.cost;
         current.daysLeft = current.reoccuring;
       }

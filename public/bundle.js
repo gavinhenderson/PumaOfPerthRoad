@@ -226,9 +226,9 @@ const CalendarView = require('./../view/Calendar.js');
 const CalendarModel = require('./../model/Calendar.js');
 
 class CalendarController {
-  constructor(Loop, Portfolio){
-    this.model = new CalendarModel(Loop, Portfolio);
-    this.view = new CalendarView(this.model);
+  constructor(Loop, Portfolio, GameConsole){
+    this.model = new CalendarModel(Loop, Portfolio, GameConsole);
+    this.view = new CalendarView(this.model, Loop);
     Loop.addViewItem(this.view);
     Loop.addRepeating(()=>{ this.model.update() }, 100);
   }
@@ -238,8 +238,8 @@ class CalendarController {
   }
 }
 
-module.exports = (Loop, Portfolio, GameSave) => {
-  let calender = new CalendarController(Loop, Portfolio);
+module.exports = (Loop, Portfolio, GameConsole, GameSave) => {
+  let calender = new CalendarController(Loop, Portfolio, GameConsole);
 
   if(GameSave != undefined){
     if(GameSave.Calendar != undefined){
@@ -355,7 +355,7 @@ $(document).ready(function() {
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole, GameSave);
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, GameSave);
-  let Calendar        = require('./controller/Calendar.js')(Loop, Portfolio, GameSave);
+  let Calendar        = require('./controller/Calendar.js')(Loop, Portfolio, GameConsole, GameSave);
 
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
@@ -370,12 +370,13 @@ $(document).ready(function() {
 
 },{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Calendar.js":8,"./controller/Market.js":9,"./controller/Portfolio.js":10,"./model/Loop.js":13,"./view/Console.js":19}],12:[function(require,module,exports){
 module.exports = class {
-  constructor(Loop, Portfolio){
-    this.portfolio  = Portfolio.model;
-    this.loop       = Loop;
-    this.day        = 0;
-    this.hour       = 0;
-    this.minute     = 0;
+  constructor(Loop, Portfolio, GameConsole){
+    this.GameConsole = GameConsole;
+    this.portfolio   = Portfolio.model;
+    this.loop        = Loop;
+    this.day         = 0;
+    this.hour        = 0;
+    this.minute      = 0;
     this.dailyExpenditures = [{
       name:         "Mortgage",
       description:  "Gotta keep make sure you keep your house",
@@ -427,7 +428,9 @@ module.exports = class {
     this.dailyExpenditures.forEach(current => {
       current.daysLeft--;
       if(current.daysLeft == 0){
-        //console.log("Day end")
+        if(current.hidden){
+          this.GameConsole.message(`You have been charged $${ current.cost } for ${ current.name }.`);
+        }
         this.portfolio.cash -= current.cost;
         current.daysLeft = current.reoccuring;
       }
@@ -863,7 +866,8 @@ module.exports = class{
 
 },{}],18:[function(require,module,exports){
 module.exports = class {
-  constructor(calendar){
+  constructor(calendar, loop){
+    this.loop = loop;
     this.calendar = calendar;
     this.paused = false;
 
@@ -881,6 +885,7 @@ module.exports = class {
 
     this.showingLength = 0;
     this.repopulate();
+    this.prevDay = 0;
   }
 
   repopulate(){
@@ -906,6 +911,43 @@ module.exports = class {
         `);
         this.showingLength++;
       }
+    });
+  }
+
+  dayEnd() {
+    this.loop.pause();
+
+    let floatingDiv = `
+      <div class="floating window" id="popup">
+        <h1 class="floating">Day End - Summary</h1>
+        <table class="floating">`
+
+    let total = 0;
+    this.calendar.dailyExpenditures.forEach(current => {
+      if(current.daysLeft == current.reoccuring){
+        floatingDiv += `
+        <tr>
+          <td>${ current.name }</td>
+          <td>${ current.cost }</td>
+        </tr>`
+        total += current.cost;
+      }
+    })
+
+    floatingDiv += `
+      <tr>
+        <td>Total</td>
+        <td>${ total }</td>
+      </tr>
+      </table>
+      <button id="remove-popup">Continue</button>
+    </div>`
+
+    $('#wrapper').append(floatingDiv);
+
+    $('#remove-popup').click(() => {
+      $('#popup').remove();
+      this.loop.pause();
     })
   }
 
@@ -913,6 +955,11 @@ module.exports = class {
     $('#day').text("Day "+this.calendar.getDay());
     $('#time').text(this.calendar.getTime())
     this.repopulate();
+
+    if(this.prevDay != this.calendar.day){
+      this.dayEnd();
+      this.prevDay = this.calendar.day;
+    }
   }
 }
 
