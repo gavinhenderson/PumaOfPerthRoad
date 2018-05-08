@@ -21,10 +21,10 @@ module.exports = class {
       this.size++;
       this.table.append(`
         <tr>
-          <td>${ current.name }</td>
-          <td id="level${ current.name }">${ current.level }</td>
-          <td id="cost${ current.name }">${ current.costs[current.level] }</td>
-          <td><button id="upgrade${ current.name }">Upgrade</button></td>
+          <td class="center">${ current.name }</td>
+          <td class="center" id="level${ current.name }">${ current.level }</td>
+          <td class="center" id="cost${ current.name }">${ current.costs[current.level] }</td>
+          <td class="center"><button id="upgrade${ current.name }">Upgrade</button></td>
         </tr>
         `);
 

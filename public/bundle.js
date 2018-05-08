@@ -90,10 +90,10 @@ module.exports = class {
       this.size++;
       this.table.append(`
         <tr>
-          <td>${ current.name }</td>
-          <td id="level${ current.name }">${ current.level }</td>
-          <td id="cost${ current.name }">${ current.costs[current.level] }</td>
-          <td><button id="upgrade${ current.name }">Upgrade</button></td>
+          <td class="center">${ current.name }</td>
+          <td class="center" id="level${ current.name }">${ current.level }</td>
+          <td class="center" id="cost${ current.name }">${ current.costs[current.level] }</td>
+          <td class="center"><button id="upgrade${ current.name }">Upgrade</button></td>
         </tr>
         `);
 
@@ -142,7 +142,6 @@ module.exports = {
       if(current.price < currentCap && current.momentum > 0.6){
         currentCap -= current.price;
         portfolio.buy(current, 1);
-        console.log(current.name + " was just bought by the auto buying bot")
       }
     })
   }
@@ -227,8 +226,8 @@ const CalendarView = require('./../view/Calendar.js');
 const CalendarModel = require('./../model/Calendar.js');
 
 class CalendarController {
-  constructor(Loop){
-    this.model = new CalendarModel(Loop);
+  constructor(Loop, Portfolio){
+    this.model = new CalendarModel(Loop, Portfolio);
     this.view = new CalendarView(this.model);
     Loop.addViewItem(this.view);
     Loop.addRepeating(()=>{ this.model.update() }, 100);
@@ -239,8 +238,8 @@ class CalendarController {
   }
 }
 
-module.exports = (Loop, GameSave) => {
-  let calender = new CalendarController(Loop);
+module.exports = (Loop, Portfolio, GameSave) => {
+  let calender = new CalendarController(Loop, Portfolio);
 
   if(GameSave != undefined){
     if(GameSave.Calendar != undefined){
@@ -356,7 +355,7 @@ $(document).ready(function() {
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole, GameSave);
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, GameSave);
-  let Calendar        = require('./controller/Calendar.js')(Loop, GameSave);
+  let Calendar        = require('./controller/Calendar.js')(Loop, Portfolio, GameSave);
 
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
@@ -366,22 +365,47 @@ $(document).ready(function() {
     saveGame.BotShop    = BotShop.getSaveInfo();
     saveGame.Calendar   = Calendar.getSaveInfo();
     store.set('GameSave', saveGame);
-  }, 10000);
+  }, 60000);
 });
 
 },{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Calendar.js":8,"./controller/Market.js":9,"./controller/Portfolio.js":10,"./model/Loop.js":13,"./view/Console.js":19}],12:[function(require,module,exports){
 module.exports = class {
-  constructor(Loop){
-    this.loop     = Loop;
-    this.day      = 0;
-    this.hour     = 0;
-    this.minute   = 0;
+  constructor(Loop, Portfolio){
+    this.portfolio  = Portfolio.model;
+    this.loop       = Loop;
+    this.day        = 0;
+    this.hour       = 0;
+    this.minute     = 0;
+    this.dailyExpenditures = [{
+      name:         "Mortgage",
+      description:  "Gotta keep make sure you keep your house",
+      reoccuring:   5, // Time in days
+      daysLeft:     5, // Time in days
+      cost:         5000,
+      hidden:       false
+    },
+    {
+      name:         "Heating",
+      description:  "Make sure you dont freeze to death",
+      reoccuring:   1,
+      daysLeft:     1,
+      cost:         300,
+      hidden:       false
+    },
+    {
+      name:         "Electricity",
+      description:  "Keep everyones phones charged",
+      reoccuring:   1,
+      daysLeft:     1,
+      cost:         300,
+      hidden:       true
+    }];
   }
 
   loadTime(time){
-    this.day = time.day;
-    this.hour = time.hour;
-    this.minute = time.minute;
+    this.day      = time.day;
+    this.hour     = time.hour;
+    this.minute   = time.minute;
   }
 
   update(){
@@ -395,7 +419,19 @@ module.exports = class {
     if((this.hour % 8) == 0 && this.hour != 0){
       this.hour = 0;
       this.day ++;
+      this.dayEnd();
     }
+  }
+
+  dayEnd(){
+    this.dailyExpenditures.forEach(current => {
+      current.daysLeft--;
+      if(current.daysLeft == 0){
+        //console.log("Day end")
+        this.portfolio.cash -= current.cost;
+        current.daysLeft = current.reoccuring;
+      }
+    });
   }
 
   pause(){
@@ -434,14 +470,26 @@ class Loop {
     this.views = [];
     this.repeating = [];
     this.waiting = [];
+
     setInterval(() => {
       if(!this.paused){
         this.runViewUpdate();
+      }
+    }, 250);
+
+    setInterval(() => {
+      if(!this.paused){
         this.runRepeating();
+      }
+    }, 100);
+
+    setInterval(() => {
+      if(!this.paused){
         this.runWaiting();
       }
-    },100)
+    }, 100);
   }
+
 
   pause(){
     this.paused = !this.paused;
@@ -829,12 +877,42 @@ module.exports = class {
     $('#reset-game').click(() => {
       localStorage.clear();
       location.reload();
+    });
+
+    this.showingLength = 0;
+    this.repopulate();
+  }
+
+  repopulate(){
+    $('#daily-expenditures').empty();
+    $('#daily-expenditures').append(`
+      <tr>
+        <th>Name</th>
+        <th>Cost</th>
+        <th>Days Left</th>
+      </tr>
+    `);
+
+    this.showingLength = 0;
+
+    this.calendar.dailyExpenditures.forEach(current => {
+      if(!current.hidden){
+        $('#daily-expenditures').append(`
+          <tr>
+            <td class="center">${ current.name }</td>
+            <td class="center">$<p class="no-new-line" id="${ current.name }-cost">${ current.cost }</p></td>
+            <td class="center" id="${ current.name }-daysLeft">${ current.daysLeft }</td>
+          </tr>
+        `);
+        this.showingLength++;
+      }
     })
   }
 
   update(){
     $('#day').text("Day "+this.calendar.getDay());
     $('#time').text(this.calendar.getTime())
+    this.repopulate();
   }
 }
 

@@ -4,14 +4,26 @@ class Loop {
     this.views = [];
     this.repeating = [];
     this.waiting = [];
+
     setInterval(() => {
       if(!this.paused){
         this.runViewUpdate();
+      }
+    }, 250);
+
+    setInterval(() => {
+      if(!this.paused){
         this.runRepeating();
+      }
+    }, 100);
+
+    setInterval(() => {
+      if(!this.paused){
         this.runWaiting();
       }
-    },100)
+    }, 100);
   }
+
 
   pause(){
     this.paused = !this.paused;

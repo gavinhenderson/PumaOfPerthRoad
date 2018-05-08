@@ -8,7 +8,7 @@ $(document).ready(function() {
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole, GameSave);
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, GameSave);
-  let Calendar        = require('./controller/Calendar.js')(Loop, GameSave);
+  let Calendar        = require('./controller/Calendar.js')(Loop, Portfolio, GameSave);
 
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
@@ -18,5 +18,5 @@ $(document).ready(function() {
     saveGame.BotShop    = BotShop.getSaveInfo();
     saveGame.Calendar   = Calendar.getSaveInfo();
     store.set('GameSave', saveGame);
-  }, 10000);
+  }, 60000);
 });

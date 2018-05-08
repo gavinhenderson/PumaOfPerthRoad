@@ -9,7 +9,6 @@ module.exports = {
       if(current.price < currentCap && current.momentum > 0.6){
         currentCap -= current.price;
         portfolio.buy(current, 1);
-        console.log(current.name + " was just bought by the auto buying bot")
       }
     })
   }

@@ -178,7 +178,15 @@ h2.calendar{
   margin:0;
 }
 
+table.calendar{
+  margin:0 auto;
+}
+
 div.center{
   margin:auto 0;
+  text-align:center;
+}
+
+.center{
   text-align:center;
 }

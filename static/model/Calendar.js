@@ -1,15 +1,40 @@
 module.exports = class {
-  constructor(Loop){
-    this.loop     = Loop;
-    this.day      = 0;
-    this.hour     = 0;
-    this.minute   = 0;
+  constructor(Loop, Portfolio){
+    this.portfolio  = Portfolio.model;
+    this.loop       = Loop;
+    this.day        = 0;
+    this.hour       = 0;
+    this.minute     = 0;
+    this.dailyExpenditures = [{
+      name:         "Mortgage",
+      description:  "Gotta keep make sure you keep your house",
+      reoccuring:   5, // Time in days
+      daysLeft:     5, // Time in days
+      cost:         5000,
+      hidden:       false
+    },
+    {
+      name:         "Heating",
+      description:  "Make sure you dont freeze to death",
+      reoccuring:   1,
+      daysLeft:     1,
+      cost:         300,
+      hidden:       false
+    },
+    {
+      name:         "Electricity",
+      description:  "Keep everyones phones charged",
+      reoccuring:   1,
+      daysLeft:     1,
+      cost:         300,
+      hidden:       true
+    }];
   }
 
   loadTime(time){
-    this.day = time.day;
-    this.hour = time.hour;
-    this.minute = time.minute;
+    this.day      = time.day;
+    this.hour     = time.hour;
+    this.minute   = time.minute;
   }
 
   update(){
@@ -23,7 +48,19 @@ module.exports = class {
     if((this.hour % 8) == 0 && this.hour != 0){
       this.hour = 0;
       this.day ++;
+      this.dayEnd();
     }
+  }
+
+  dayEnd(){
+    this.dailyExpenditures.forEach(current => {
+      current.daysLeft--;
+      if(current.daysLeft == 0){
+        //console.log("Day end")
+        this.portfolio.cash -= current.cost;
+        current.daysLeft = current.reoccuring;
+      }
+    });
   }
 
   pause(){
