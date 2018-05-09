@@ -5,25 +5,25 @@ module.exports = class {
     this.jobs = [{
       name:       'Cleaning',
       payment:    10,
-      timeTaken:  10, // Time in seconds
+      timeTaken:  5, // Time in seconds
       locked:     0
     },
     {
       name:       'Call Center',
       payment:    25,
-      timeTaken:  15,
+      timeTaken:  7,
       locked:     1
     },
     {
       name:       'Paperboy',
       payment:    20,
-      timeTaken:  7,
-      locked:      2
+      timeTaken:  4,
+      locked:     2
     },
     {
       name:       'Milkman',
       payment:    25,
-      timeTaken:  5,
+      timeTaken:  2,
       locked:     3
     }];
   }

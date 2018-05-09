@@ -8,20 +8,13 @@ module.exports = class {
     this.hour        = 0;
     this.minute      = 0;
     this.gameLost    = false;
-    this.dailyExpenditures = [{
-      name:         "Mortgage",
-      description:  "Gotta keep make sure you keep your house",
-      reoccuring:   5, // Time in days
-      daysLeft:     5, // Time in days
-      cost:         5000,
-      hidden:       false
-    },
+    this.dailyExpenditures = [
     {
       name:         "Heating",
       description:  "Make sure you dont freeze to death",
       reoccuring:   1,
       daysLeft:     1,
-      cost:         300,
+      cost:         60,
       hidden:       false
     },
     {
@@ -29,7 +22,23 @@ module.exports = class {
       description:  "Keep everyones phones charged",
       reoccuring:   1,
       daysLeft:     1,
-      cost:         300,
+      cost:         60,
+      hidden:       false
+    },
+    {
+      name:         'Buy Food',
+      description:  'Eat to live',
+      reoccuring:   2,
+      daysLeft:     4,
+      cost:         50,
+      hidden:       false
+    },
+    {
+      name:         "Mortgage",
+      description:  "Gotta keep make sure you keep your house",
+      reoccuring:   5, // Time in days
+      daysLeft:     10, // Time in days
+      cost:         1000,
       hidden:       false
     }];
   }

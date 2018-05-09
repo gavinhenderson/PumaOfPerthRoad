@@ -362,7 +362,7 @@ const Portfolio      = require('./../model/Portfolio.js');
 
 class PortfolioController{
   constructor(loop, market, GameConsole){
-    this.model = new Portfolio(1000, market.getModel(), GameConsole);
+    this.model = new Portfolio(150, market.getModel(), GameConsole);
     this.view = new PortfolioView(this.model, loop);
     loop.addViewItem(this.view);
   }
@@ -435,20 +435,13 @@ module.exports = class {
     this.hour        = 0;
     this.minute      = 0;
     this.gameLost    = false;
-    this.dailyExpenditures = [{
-      name:         "Mortgage",
-      description:  "Gotta keep make sure you keep your house",
-      reoccuring:   5, // Time in days
-      daysLeft:     5, // Time in days
-      cost:         5000,
-      hidden:       false
-    },
+    this.dailyExpenditures = [
     {
       name:         "Heating",
       description:  "Make sure you dont freeze to death",
       reoccuring:   1,
       daysLeft:     1,
-      cost:         300,
+      cost:         60,
       hidden:       false
     },
     {
@@ -456,7 +449,23 @@ module.exports = class {
       description:  "Keep everyones phones charged",
       reoccuring:   1,
       daysLeft:     1,
-      cost:         300,
+      cost:         60,
+      hidden:       false
+    },
+    {
+      name:         'Buy Food',
+      description:  'Eat to live',
+      reoccuring:   2,
+      daysLeft:     4,
+      cost:         50,
+      hidden:       false
+    },
+    {
+      name:         "Mortgage",
+      description:  "Gotta keep make sure you keep your house",
+      reoccuring:   5, // Time in days
+      daysLeft:     10, // Time in days
+      cost:         1000,
       hidden:       false
     }];
   }
@@ -675,25 +684,25 @@ module.exports = class {
     this.jobs = [{
       name:       'Cleaning',
       payment:    10,
-      timeTaken:  10, // Time in seconds
+      timeTaken:  5, // Time in seconds
       locked:     0
     },
     {
       name:       'Call Center',
       payment:    25,
-      timeTaken:  15,
+      timeTaken:  7,
       locked:     1
     },
     {
       name:       'Paperboy',
       payment:    20,
-      timeTaken:  7,
-      locked:      2
+      timeTaken:  4,
+      locked:     2
     },
     {
       name:       'Milkman',
       payment:    25,
-      timeTaken:  5,
+      timeTaken:  2,
       locked:     3
     }];
   }
