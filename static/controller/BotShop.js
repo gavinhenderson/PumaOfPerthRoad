@@ -2,12 +2,12 @@ const View    = require('./../View/BotShop.js');
 const Model   = require('./../Model/BotShop.js');
 
 class BotShopController {
-  constructor(Loop, Portfolio, Market){
+  constructor(Loop, Portfolio, Market, Calendar){
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
     this.Model      = new Model( Market, Portfolio );
-    this.View       = new View( this.Model, Loop );
+    this.View       = new View( this.Model, Loop, Calendar.model );
 
     this.Loop.addViewItem( this.View );
     this.Loop.addRepeating(() => {
@@ -20,8 +20,8 @@ class BotShopController {
   }
 }
 
-module.exports = (Loop, Portfolio, Market, GameSave) => {
-  let controller =  new BotShopController(Loop, Portfolio, Market);
+module.exports = (Loop, Portfolio, Market, Calendar, GameSave) => {
+  let controller =  new BotShopController(Loop, Portfolio, Market, Calendar);
 
   // Bots defined externally
   controller.Model.addBot(require('./../bot-behaviour/auto-sell.js'));

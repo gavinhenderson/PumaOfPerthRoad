@@ -1,5 +1,6 @@
 module.exports = class {
-  constructor(Loop, Portfolio, GameConsole){
+  constructor(Loop, Portfolio, GameConsole, controller){
+    this.controller  = controller;
     this.GameConsole = GameConsole;
     this.portfolio   = Portfolio.model;
     this.loop        = Loop;
@@ -28,7 +29,7 @@ module.exports = class {
       reoccuring:   1,
       daysLeft:     1,
       cost:         300,
-      hidden:       true
+      hidden:       false
     }];
   }
 

@@ -1,5 +1,6 @@
 module.exports = class{
-  constructor(market, portfolio, loop){
+  constructor(market, portfolio, loop, calendar){
+    this.calendar   = calendar
     this.market     = market;
     this.listSize   = 0;
     this.portfolio  = portfolio;
@@ -19,6 +20,10 @@ module.exports = class{
   }
 
   update(){
+    if(this.calendar.day > 3){
+      $('#broker-window').css('visibility', 'visible');
+    }
+
     // Only clear if new stocks
     if(this.listSize != this.market.stocks.length){
       // Clear stocks

@@ -1,7 +1,9 @@
 module.exports = class{
-  constructor(market, loop){
+  constructor(market, loop, calendar){
+    this.calendar   = calendar
     this.market     = market;
     this.marketSize = 0;
+    this.hidden     = true;
     this.repopulate();
 
     $('#market-title').click(() => {
@@ -36,7 +38,15 @@ module.exports = class{
     this.marketSize = this.market.stocks.length;
   }
 
+  setCalendar(calendar){
+    this.calendar = calendar;
+  }
+
   update(){
+    if(this.calendar.day > 3){
+      $('#stock-viewer-window').css('visibility', 'visible');
+    }
+
     // Only update if the stocks have changed
     if(this.marketSize != this.market.stocks.length){ this.repopulate() }
 

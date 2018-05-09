@@ -3,7 +3,7 @@ const CalendarModel = require('./../model/Calendar.js');
 
 class CalendarController {
   constructor(Loop, Portfolio, GameConsole){
-    this.model = new CalendarModel(Loop, Portfolio, GameConsole);
+    this.model = new CalendarModel(Loop, Portfolio, GameConsole, this);
     this.view = new CalendarView(this.model, Loop);
     Loop.addViewItem(this.view);
     Loop.addRepeating(()=>{ this.model.update() }, 100);

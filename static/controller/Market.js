@@ -7,8 +7,8 @@ class MarketController {
     this.loop = loop;
     this.model = model;
     loop.addRepeating(()=>{this.model.update()},500);
-    this.viewer = new MarketViewer(this.model, loop);
-    loop.addViewItem(this.viewer)
+    this.view = new MarketViewer(this.model, loop);
+    loop.addViewItem(this.view);
   }
 
   getModel(){
@@ -17,6 +17,10 @@ class MarketController {
 
   getSaveInfo(){
     return this.model.getSaveInfo();
+  }
+
+  setCalendar(calendar){
+    this.view.setCalendar(calendar.model)
   }
 }
 

@@ -1,8 +1,8 @@
 const BrokerView  = require('./../view/Broker.js')
 
 class BrokerController{
-  constructor(loop, market, portfolio){
-    this.view = new BrokerView(market.getModel(), portfolio.getModel(), loop)
+  constructor(loop, market, portfolio, calendar){
+    this.view = new BrokerView(market.getModel(), portfolio.getModel(), loop, calendar.model);
     loop.addViewItem(this.view);
   }
 
@@ -11,6 +11,6 @@ class BrokerController{
   }
 }
 
-module.exports = (loop, market, portfolio) => {
-  return new BrokerController(loop, market, portfolio);
+module.exports = (loop, market, portfolio, calendar) => {
+  return new BrokerController(loop, market, portfolio, calendar);
 }

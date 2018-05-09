@@ -1,5 +1,6 @@
 module.exports = class {
-  constructor( model, loop ){
+  constructor( model, loop, calendar ){
+    this.calendar = calendar
     this.model = model;
     this.size = 0;
     this.table = $('#bot-shop-table');
@@ -48,6 +49,10 @@ module.exports = class {
   }
 
   update(){
+    if(this.calendar.day > 5){
+      $('#bot-shop-window').css('visibility', "visible")
+    }
+
     if(this.size != this.model.bots.length){
       this.repopulate();
     } else {

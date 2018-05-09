@@ -69,7 +69,8 @@ module.exports = class {
 
 },{"./Bot.js":1}],3:[function(require,module,exports){
 module.exports = class {
-  constructor( model, loop ){
+  constructor( model, loop, calendar ){
+    this.calendar = calendar
     this.model = model;
     this.size = 0;
     this.table = $('#bot-shop-table');
@@ -118,6 +119,10 @@ module.exports = class {
   }
 
   update(){
+    if(this.calendar.day > 5){
+      $('#bot-shop-window').css('visibility', "visible")
+    }
+
     if(this.size != this.model.bots.length){
       this.repopulate();
     } else {
@@ -193,12 +198,12 @@ const View    = require('./../View/BotShop.js');
 const Model   = require('./../Model/BotShop.js');
 
 class BotShopController {
-  constructor(Loop, Portfolio, Market){
+  constructor(Loop, Portfolio, Market, Calendar){
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
     this.Model      = new Model( Market, Portfolio );
-    this.View       = new View( this.Model, Loop );
+    this.View       = new View( this.Model, Loop, Calendar.model );
 
     this.Loop.addViewItem( this.View );
     this.Loop.addRepeating(() => {
@@ -211,8 +216,8 @@ class BotShopController {
   }
 }
 
-module.exports = (Loop, Portfolio, Market, GameSave) => {
-  let controller =  new BotShopController(Loop, Portfolio, Market);
+module.exports = (Loop, Portfolio, Market, Calendar, GameSave) => {
+  let controller =  new BotShopController(Loop, Portfolio, Market, Calendar);
 
   // Bots defined externally
   controller.Model.addBot(require('./../bot-behaviour/auto-sell.js'));
@@ -233,8 +238,8 @@ module.exports = (Loop, Portfolio, Market, GameSave) => {
 const BrokerView  = require('./../view/Broker.js')
 
 class BrokerController{
-  constructor(loop, market, portfolio){
-    this.view = new BrokerView(market.getModel(), portfolio.getModel(), loop)
+  constructor(loop, market, portfolio, calendar){
+    this.view = new BrokerView(market.getModel(), portfolio.getModel(), loop, calendar.model);
     loop.addViewItem(this.view);
   }
 
@@ -243,8 +248,8 @@ class BrokerController{
   }
 }
 
-module.exports = (loop, market, portfolio) => {
-  return new BrokerController(loop, market, portfolio);
+module.exports = (loop, market, portfolio, calendar) => {
+  return new BrokerController(loop, market, portfolio, calendar);
 }
 
 },{"./../view/Broker.js":20}],9:[function(require,module,exports){
@@ -253,7 +258,7 @@ const CalendarModel = require('./../model/Calendar.js');
 
 class CalendarController {
   constructor(Loop, Portfolio, GameConsole){
-    this.model = new CalendarModel(Loop, Portfolio, GameConsole);
+    this.model = new CalendarModel(Loop, Portfolio, GameConsole, this);
     this.view = new CalendarView(this.model, Loop);
     Loop.addViewItem(this.view);
     Loop.addRepeating(()=>{ this.model.update() }, 100);
@@ -286,8 +291,8 @@ class MarketController {
     this.loop = loop;
     this.model = model;
     loop.addRepeating(()=>{this.model.update()},500);
-    this.viewer = new MarketViewer(this.model, loop);
-    loop.addViewItem(this.viewer)
+    this.view = new MarketViewer(this.model, loop);
+    loop.addViewItem(this.view);
   }
 
   getModel(){
@@ -296,6 +301,10 @@ class MarketController {
 
   getSaveInfo(){
     return this.model.getSaveInfo();
+  }
+
+  setCalendar(calendar){
+    this.view.setCalendar(calendar.model)
   }
 }
 
@@ -397,10 +406,12 @@ $(document).ready(function() {
 
   let Market          = require('./controller/Market.js')(Loop, GameSave);
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole, GameSave);
-  let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
-  let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, GameSave);
   let Calendar        = require('./controller/Calendar.js')(Loop, Portfolio, GameConsole, GameSave);
   let OddJobs         = require('./controller/OddJobs.js')(Loop, Portfolio, Calendar);
+  let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio, Calendar);
+  let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, Calendar, GameSave);
+
+  Market.setCalendar(Calendar);
 
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
@@ -415,7 +426,8 @@ $(document).ready(function() {
 
 },{"./controller/BotShop.js":7,"./controller/Broker.js":8,"./controller/Calendar.js":9,"./controller/Market.js":10,"./controller/OddJobs.js":11,"./controller/Portfolio.js":12,"./model/Loop.js":15,"./view/Console.js":22}],14:[function(require,module,exports){
 module.exports = class {
-  constructor(Loop, Portfolio, GameConsole){
+  constructor(Loop, Portfolio, GameConsole, controller){
+    this.controller  = controller;
     this.GameConsole = GameConsole;
     this.portfolio   = Portfolio.model;
     this.loop        = Loop;
@@ -444,7 +456,7 @@ module.exports = class {
       reoccuring:   1,
       daysLeft:     1,
       cost:         300,
-      hidden:       true
+      hidden:       false
     }];
   }
 
@@ -842,7 +854,8 @@ module.exports = class {
 
 },{}],20:[function(require,module,exports){
 module.exports = class{
-  constructor(market, portfolio, loop){
+  constructor(market, portfolio, loop, calendar){
+    this.calendar   = calendar
     this.market     = market;
     this.listSize   = 0;
     this.portfolio  = portfolio;
@@ -862,6 +875,10 @@ module.exports = class{
   }
 
   update(){
+    if(this.calendar.day > 3){
+      $('#broker-window').css('visibility', 'visible');
+    }
+
     // Only clear if new stocks
     if(this.listSize != this.market.stocks.length){
       // Clear stocks
@@ -1065,9 +1082,11 @@ module.exports = () => {
 arguments[4][4][0].apply(exports,arguments)
 },{"dup":4}],24:[function(require,module,exports){
 module.exports = class{
-  constructor(market, loop){
+  constructor(market, loop, calendar){
+    this.calendar   = calendar
     this.market     = market;
     this.marketSize = 0;
+    this.hidden     = true;
     this.repopulate();
 
     $('#market-title').click(() => {
@@ -1102,7 +1121,15 @@ module.exports = class{
     this.marketSize = this.market.stocks.length;
   }
 
+  setCalendar(calendar){
+    this.calendar = calendar;
+  }
+
   update(){
+    if(this.calendar.day > 3){
+      $('#stock-viewer-window').css('visibility', 'visible');
+    }
+
     // Only update if the stocks have changed
     if(this.marketSize != this.market.stocks.length){ this.repopulate() }
 
