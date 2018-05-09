@@ -7,7 +7,7 @@ class MarketController {
     this.loop = loop;
     this.model = model;
     loop.addRepeating(()=>{this.model.update()},500);
-    this.viewer = new MarketViewer(this.model);
+    this.viewer = new MarketViewer(this.model, loop);
     loop.addViewItem(this.viewer)
   }
 

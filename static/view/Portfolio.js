@@ -1,8 +1,13 @@
 module.exports = class {
-  constructor( portfolio ){
+  constructor( portfolio, loop ){
     this.portfolio      = portfolio;
     this.portfolioSize  = 0;
     this.repopulate();
+
+    $('#portfolio-title').click(() => {
+      let desc = `In the porfolio page you will see all the stocks you own and how many. It is also here that you can see how much money you have. If you press select on a stock it will be the selected stock in the buy sell page`;
+      require('./Help.js')("Portfolio Help", desc, loop);
+    });
   }
 
   repopulate(){

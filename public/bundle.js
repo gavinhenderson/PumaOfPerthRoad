@@ -69,11 +69,16 @@ module.exports = class {
 
 },{"./Bot.js":1}],3:[function(require,module,exports){
 module.exports = class {
-  constructor( model ){
+  constructor( model, loop ){
     this.model = model;
     this.size = 0;
     this.table = $('#bot-shop-table');
     this.update();
+
+    $('#bot-shop-title').click(() => {
+      let desc = `Odd Jobs is a place for you to make a little bit of money and all you need is some time. Each job has a wage and an amount of time it takes to complete. If you chose to do the job you won't be able to do any other jobs while you complete the first one.`;
+      require('./Help.js')("Bot Shop Help", desc, loop);
+    });
   }
 
   repopulate(){
@@ -131,7 +136,27 @@ module.exports = class {
   }
 }
 
-},{}],4:[function(require,module,exports){
+},{"./Help.js":4}],4:[function(require,module,exports){
+module.exports = (title, description, loop) => {
+  loop.pause();
+
+  let DialogWindow = `
+    <div class="window on-top" id="help">
+      <h1 class="window title">${ title }</h1>
+      <p class="description help">${ description }</p>
+      <button class="center" id="resume">Resume</button>
+    </div>`
+
+  $('body').append(DialogWindow);
+
+  $('#resume').click(() => {
+    loop.pause();
+    $('#help').remove();
+  });
+
+}
+
+},{}],5:[function(require,module,exports){
 module.exports = {
   name: "Auto-Buy",
   description: "This bot will automatically buy stocks when they are about to make a lot of money",
@@ -148,7 +173,7 @@ module.exports = {
   }
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = {
   name: "Auto-Sell",
   description: "This bot will automatically sell stocks when they are crashing or when they are thriving",
@@ -163,7 +188,7 @@ module.exports = {
   }
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 const View    = require('./../View/BotShop.js');
 const Model   = require('./../Model/BotShop.js');
 
@@ -173,7 +198,7 @@ class BotShopController {
     this.Portfolio  = Portfolio;
     this.Market     = Market;
     this.Model      = new Model( Market, Portfolio );
-    this.View       = new View( this.Model );
+    this.View       = new View( this.Model, Loop );
 
     this.Loop.addViewItem( this.View );
     this.Loop.addRepeating(() => {
@@ -204,12 +229,12 @@ module.exports = (Loop, Portfolio, Market, GameSave) => {
   return controller;
 }
 
-},{"./../Model/BotShop.js":2,"./../View/BotShop.js":3,"./../bot-behaviour/auto-buy.js":4,"./../bot-behaviour/auto-sell.js":5}],7:[function(require,module,exports){
+},{"./../Model/BotShop.js":2,"./../View/BotShop.js":3,"./../bot-behaviour/auto-buy.js":5,"./../bot-behaviour/auto-sell.js":6}],8:[function(require,module,exports){
 const BrokerView  = require('./../view/Broker.js')
 
 class BrokerController{
   constructor(loop, market, portfolio){
-    this.view = new BrokerView(market.getModel(), portfolio.getModel())
+    this.view = new BrokerView(market.getModel(), portfolio.getModel(), loop)
     loop.addViewItem(this.view);
   }
 
@@ -222,7 +247,7 @@ module.exports = (loop, market, portfolio) => {
   return new BrokerController(loop, market, portfolio);
 }
 
-},{"./../view/Broker.js":19}],8:[function(require,module,exports){
+},{"./../view/Broker.js":20}],9:[function(require,module,exports){
 const CalendarView = require('./../view/Calendar.js');
 const CalendarModel = require('./../model/Calendar.js');
 
@@ -251,7 +276,7 @@ module.exports = (Loop, Portfolio, GameConsole, GameSave) => {
   return calender;
 }
 
-},{"./../model/Calendar.js":13,"./../view/Calendar.js":20}],9:[function(require,module,exports){
+},{"./../model/Calendar.js":14,"./../view/Calendar.js":21}],10:[function(require,module,exports){
 const Market        = require('./../model/Market.js');
 const MarketViewer  = require('./../view/Market.js');
 const Stock         = require('./../model/Stock.js');
@@ -261,7 +286,7 @@ class MarketController {
     this.loop = loop;
     this.model = model;
     loop.addRepeating(()=>{this.model.update()},500);
-    this.viewer = new MarketViewer(this.model);
+    this.viewer = new MarketViewer(this.model, loop);
     loop.addViewItem(this.viewer)
   }
 
@@ -304,14 +329,14 @@ module.exports = (loop, marketSave) => {
   return new MarketController(market, loop);
 }
 
-},{"./../model/Market.js":15,"./../model/Stock.js":18,"./../view/Market.js":22}],10:[function(require,module,exports){
+},{"./../model/Market.js":16,"./../model/Stock.js":19,"./../view/Market.js":24}],11:[function(require,module,exports){
 const OddJobsView  = require('./../view/OddJobs.js');
 const OddJobsModel = require('./../model/OddJobs.js');
 
 class OddJobsController {
   constructor(Loop, Portfolio) {
     this.model  = new OddJobsModel( Portfolio.model );
-    this.view   = new OddJobsView( this.model );
+    this.view   = new OddJobsView( this.model, Loop );
     Loop.addViewItem( this.view );
   }
 }
@@ -322,14 +347,14 @@ module.exports = (Loop, Portfolio) => {
   return controller;
 }
 
-},{"./../model/OddJobs.js":16,"./../view/OddJobs.js":23}],11:[function(require,module,exports){
+},{"./../model/OddJobs.js":17,"./../view/OddJobs.js":25}],12:[function(require,module,exports){
 const PortfolioView  = require('./../view/Portfolio.js');
 const Portfolio      = require('./../model/Portfolio.js');
 
 class PortfolioController{
   constructor(loop, market, GameConsole){
     this.model = new Portfolio(1000, market.getModel(), GameConsole);
-    this.view = new PortfolioView(this.model);
+    this.view = new PortfolioView(this.model, loop);
     loop.addViewItem(this.view);
   }
 
@@ -363,7 +388,7 @@ module.exports = (loop, market, GameConsole, GameSave) => {
   return PortController;
 }
 
-},{"./../model/Portfolio.js":17,"./../view/Portfolio.js":24}],12:[function(require,module,exports){
+},{"./../model/Portfolio.js":18,"./../view/Portfolio.js":26}],13:[function(require,module,exports){
 $(document).ready(function() {
   let GameConsole     = require('./view/Console.js')();
   let Loop            = require('./model/Loop.js')();
@@ -388,7 +413,7 @@ $(document).ready(function() {
   }, 60000);
 });
 
-},{"./controller/BotShop.js":6,"./controller/Broker.js":7,"./controller/Calendar.js":8,"./controller/Market.js":9,"./controller/OddJobs.js":10,"./controller/Portfolio.js":11,"./model/Loop.js":14,"./view/Console.js":21}],13:[function(require,module,exports){
+},{"./controller/BotShop.js":7,"./controller/Broker.js":8,"./controller/Calendar.js":9,"./controller/Market.js":10,"./controller/OddJobs.js":11,"./controller/Portfolio.js":12,"./model/Loop.js":15,"./view/Console.js":22}],14:[function(require,module,exports){
 module.exports = class {
   constructor(Loop, Portfolio, GameConsole){
     this.GameConsole = GameConsole;
@@ -486,7 +511,7 @@ module.exports = class {
   }
 }
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 class Loop {
   constructor(){
     this.paused = false;
@@ -572,7 +597,7 @@ module.exports = () => {
   return new Loop();
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = class{
 
   constructor(){
@@ -625,7 +650,7 @@ module.exports = class{
 
 }
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = class {
   constructor ( Portfolio ){
     this.portfolio = Portfolio
@@ -667,7 +692,7 @@ module.exports = class {
   }
 }
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = class{
   constructor(cashValue, market, gameConsole){
     this.gameConsole = gameConsole;
@@ -782,7 +807,7 @@ module.exports = class{
   }*/
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports = class {
   constructor( ops ){
     this.name         = ops.name;
@@ -843,9 +868,9 @@ module.exports = class {
   }
 }
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = class{
-  constructor(market, portfolio){
+  constructor(market, portfolio, loop){
     this.market     = market;
     this.listSize   = 0;
     this.portfolio  = portfolio;
@@ -856,6 +881,11 @@ module.exports = class{
 
     $('#sellButton').click(() => {
       this.sell();
+    });
+
+    $('#broker-title').click(() => {
+      let desc = `This is window allows you to buy and sell any number of stocks. You can only buy stocks that you have enough money for. Once you buy or sell the stock you will see it appear or disappear in your 'portfolio'`;
+      require('./Help.js')("Buy/Sell Help", desc, loop);
     });
   }
 
@@ -930,7 +960,7 @@ module.exports = class{
   }
 }
 
-},{}],20:[function(require,module,exports){
+},{"./Help.js":23}],21:[function(require,module,exports){
 module.exports = class {
   constructor(calendar, loop){
     this.loop = loop;
@@ -952,6 +982,11 @@ module.exports = class {
     this.showingLength = 0;
     this.repopulate();
     this.prevDay = 0;
+
+    $('#calendar-title').click(() => {
+      let desc = `The Calendar page tells you what time and day it is. The work day runs from 9AM-5PM. At the end of every day you must make certain payments and this tells you which payments are due when. It also lets you delete your saved data and pause the game`;
+      require('./Help.js')("Calendar Help", desc, loop);
+    });
   }
 
   repopulate(){
@@ -1029,7 +1064,7 @@ module.exports = class {
   }
 }
 
-},{}],21:[function(require,module,exports){
+},{"./Help.js":23}],22:[function(require,module,exports){
 class Console{
   constructor(){
     this.consoleDomElement = $('#console');
@@ -1050,15 +1085,23 @@ module.exports = () => {
   let gameConsole = new Console();
   gameConsole.message("Welcome to Puma of Perth Road!");
   gameConsole.message("Keep an eye out on this console, you will recieve all your missions here");
+  gameConsole.message("Click on the title of any window for 'Help'")
   return gameConsole;
 }
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],24:[function(require,module,exports){
 module.exports = class{
-  constructor(market){
+  constructor(market, loop){
     this.market     = market;
     this.marketSize = 0;
-    this.repopulate()
+    this.repopulate();
+
+    $('#market-title').click(() => {
+      let desc = `The Stocks pane is a place where you can see all of the stock prices. It also lets you know if the stock is trending up or down right now. If you press 'select' it will then be the chosen stock in the buy/sell page.`;
+      require('./Help.js')("Stocks Help", desc, loop);
+    });
   }
 
   repopulate(){
@@ -1102,12 +1145,17 @@ module.exports = class{
   }
 }
 
-},{}],23:[function(require,module,exports){
+},{"./Help.js":23}],25:[function(require,module,exports){
 module.exports = class {
-  constructor( model ){
+  constructor( model, loop ){
     this.model = model;
     this.buttons = [];
     this.repopulate();
+
+    $('#odd-job-title').click(() => {
+      let desc = `Odd Jobs is a place for you to make a little bit of money and all you need is some time. Each job has a wage and an amount of time it takes to complete. If you chose to do the job you won't be able to do any other jobs while you complete the first one.`;
+      require('./Help.js')("Odd Jobs Help", desc, loop);
+    });
   }
 
   repopulate(){
@@ -1151,12 +1199,17 @@ module.exports = class {
   }
 }
 
-},{}],24:[function(require,module,exports){
+},{"./Help.js":23}],26:[function(require,module,exports){
 module.exports = class {
-  constructor( portfolio ){
+  constructor( portfolio, loop ){
     this.portfolio      = portfolio;
     this.portfolioSize  = 0;
     this.repopulate();
+
+    $('#portfolio-title').click(() => {
+      let desc = `In the porfolio page you will see all the stocks you own and how many. It is also here that you can see how much money you have. If you press select on a stock it will be the selected stock in the buy sell page`;
+      require('./Help.js')("Portfolio Help", desc, loop);
+    });
   }
 
   repopulate(){
@@ -1222,4 +1275,4 @@ module.exports = class {
   }
 }
 
-},{}]},{},[12]);
+},{"./Help.js":23}]},{},[13]);

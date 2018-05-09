@@ -1,5 +1,5 @@
 module.exports = class{
-  constructor(market, portfolio){
+  constructor(market, portfolio, loop){
     this.market     = market;
     this.listSize   = 0;
     this.portfolio  = portfolio;
@@ -10,6 +10,11 @@ module.exports = class{
 
     $('#sellButton').click(() => {
       this.sell();
+    });
+
+    $('#broker-title').click(() => {
+      let desc = `This is window allows you to buy and sell any number of stocks. You can only buy stocks that you have enough money for. Once you buy or sell the stock you will see it appear or disappear in your 'portfolio'`;
+      require('./Help.js')("Buy/Sell Help", desc, loop);
     });
   }
 

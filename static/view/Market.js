@@ -1,8 +1,13 @@
 module.exports = class{
-  constructor(market){
+  constructor(market, loop){
     this.market     = market;
     this.marketSize = 0;
-    this.repopulate()
+    this.repopulate();
+
+    $('#market-title').click(() => {
+      let desc = `The Stocks pane is a place where you can see all of the stock prices. It also lets you know if the stock is trending up or down right now. If you press 'select' it will then be the chosen stock in the buy/sell page.`;
+      require('./Help.js')("Stocks Help", desc, loop);
+    });
   }
 
   repopulate(){

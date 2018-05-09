@@ -16,7 +16,10 @@ body{
   float:right;
   margin:0;
 }
-.center{ text-align:center; }
+.center{
+  text-align:center;
+  margin: 0;
+}
 p.no-new-line { display:inline; }
 
 

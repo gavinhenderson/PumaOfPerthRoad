@@ -19,6 +19,11 @@ module.exports = class {
     this.showingLength = 0;
     this.repopulate();
     this.prevDay = 0;
+
+    $('#calendar-title').click(() => {
+      let desc = `The Calendar page tells you what time and day it is. The work day runs from 9AM-5PM. At the end of every day you must make certain payments and this tells you which payments are due when. It also lets you delete your saved data and pause the game`;
+      require('./Help.js')("Calendar Help", desc, loop);
+    });
   }
 
   repopulate(){

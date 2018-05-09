@@ -1,8 +1,13 @@
 module.exports = class {
-  constructor( model ){
+  constructor( model, loop ){
     this.model = model;
     this.buttons = [];
     this.repopulate();
+
+    $('#odd-job-title').click(() => {
+      let desc = `Odd Jobs is a place for you to make a little bit of money and all you need is some time. Each job has a wage and an amount of time it takes to complete. If you chose to do the job you won't be able to do any other jobs while you complete the first one.`;
+      require('./Help.js')("Odd Jobs Help", desc, loop);
+    });
   }
 
   repopulate(){

@@ -4,7 +4,7 @@ const OddJobsModel = require('./../model/OddJobs.js');
 class OddJobsController {
   constructor(Loop, Portfolio) {
     this.model  = new OddJobsModel( Portfolio.model );
-    this.view   = new OddJobsView( this.model );
+    this.view   = new OddJobsView( this.model, Loop );
     Loop.addViewItem( this.view );
   }
 }

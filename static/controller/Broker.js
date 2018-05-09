@@ -2,7 +2,7 @@ const BrokerView  = require('./../view/Broker.js')
 
 class BrokerController{
   constructor(loop, market, portfolio){
-    this.view = new BrokerView(market.getModel(), portfolio.getModel())
+    this.view = new BrokerView(market.getModel(), portfolio.getModel(), loop)
     loop.addViewItem(this.view);
   }
 

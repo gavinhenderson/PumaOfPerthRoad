@@ -1,9 +1,14 @@
 module.exports = class {
-  constructor( model ){
+  constructor( model, loop ){
     this.model = model;
     this.size = 0;
     this.table = $('#bot-shop-table');
     this.update();
+
+    $('#bot-shop-title').click(() => {
+      let desc = `The bot shop is a place where you can automate processes so that you have a chance of making money without having to do anything.`;
+      require('./Help.js')("Bot Shop Help", desc, loop);
+    });
   }
 
   repopulate(){

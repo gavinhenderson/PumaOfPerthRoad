@@ -12,7 +12,7 @@
 
       <!-- ODD JOBS -->
       <div class="odd-jobs window stack">
-        <h1 class="window title">Odd Jobs</h1>
+        <h1 class="window title" id="odd-job-title">Odd Jobs</h1>
         <table class="window" id="odd-jobs-table">
           <tr>
             <th>Job</th>
@@ -23,20 +23,9 @@
         </table>
       </div>
 
-    </div>
-
-    <div class="column">
-
-      <!-- STOCK VIEWER -->
-      <div class="stock-viewer window stack">
-        <h1 class="window title">Stocks</h1>
-        <table id="stock-viewer" class="window">
-        </table>
-      </div>
-
       <!-- BUY/SELL -->
       <div class="manual-buysell window stack">
-        <h1 class="window title">Manual Buy/Sell</h1>
+        <h1 class="window title" id="broker-title">Manual Buy/Sell</h1>
         <div class="center">
           <select class="manual-buysell" id="stockSelecter">
           </select>
@@ -56,9 +45,20 @@
 
     <div class="column">
 
+      <!-- STOCK VIEWER -->
+      <div class="stock-viewer window stack">
+        <h1 class="window title" id="market-title">Stocks</h1>
+        <table id="stock-viewer" class="window">
+        </table>
+      </div>
+
+    </div>
+
+    <div class="column">
+
       <!-- PORTFOLIO -->
       <div class="portfolio window stack">
-        <h1 class="window title">Portfolio</h1>
+        <h1 class="window title" id="portfolio-title">Portfolio</h1>
         <div class="center">
           Cash To Spend $<p class="no-new-line" id="cash-value"></p>
         </div>
@@ -80,7 +80,7 @@
 
       <!-- BOT-SHOP -->
       <div class="bot-shop window stack">
-        <h1 class="window title">Bot Shop</h1>
+        <h1 class="window title" id="bot-shop-title">Bot Shop</h1>
         <table class="window" id="bot-shop-table">
           <tr>
             <th>Bot</th>
@@ -97,11 +97,13 @@
 
       <!-- CALENDAR -->
       <div class="calendar window stack">
-        <h1 class="window title">Calendar</h1>
+        <h1 class="window title" id="calendar-title">Calendar</h1>
         <h2 id="day" class="center calendar"></h2>
         <h2 id="time" class="center calendar"></h2>
-        <button id="pause-game" class="calendar">Pause</button>
-        <button id="reset-game" class="calendar">Reset Game</button>
+        <div class="center">
+          <button id="pause-game" class="calendar">Pause</button>
+          <button id="reset-game" class="calendar">Reset Game</button>
+        </div>
         <table class="window" id="daily-expenditures">
           <tr>
             <th>Name</th>

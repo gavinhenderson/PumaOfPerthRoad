@@ -4,7 +4,7 @@ const Portfolio      = require('./../model/Portfolio.js');
 class PortfolioController{
   constructor(loop, market, GameConsole){
     this.model = new Portfolio(1000, market.getModel(), GameConsole);
-    this.view = new PortfolioView(this.model);
+    this.view = new PortfolioView(this.model, loop);
     loop.addViewItem(this.view);
   }
 
