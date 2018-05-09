@@ -7,6 +7,7 @@ module.exports = class {
     this.day         = 0;
     this.hour        = 0;
     this.minute      = 0;
+    this.gameLost    = false;
     this.dailyExpenditures = [{
       name:         "Mortgage",
       description:  "Gotta keep make sure you keep your house",
@@ -49,8 +50,8 @@ module.exports = class {
 
     if((this.hour % 8) == 0 && this.hour != 0){
       this.hour = 0;
-      this.day ++;
       this.dayEnd();
+      this.day ++;
     }
   }
 
@@ -65,6 +66,10 @@ module.exports = class {
         current.daysLeft = current.reoccuring;
       }
     });
+
+    if(this.portfolio.cash < 0) {
+      this.gameLost = true;
+    }
   }
 
   pause(){

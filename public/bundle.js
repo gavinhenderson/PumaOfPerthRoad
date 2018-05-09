@@ -434,6 +434,7 @@ module.exports = class {
     this.day         = 0;
     this.hour        = 0;
     this.minute      = 0;
+    this.gameLost    = false;
     this.dailyExpenditures = [{
       name:         "Mortgage",
       description:  "Gotta keep make sure you keep your house",
@@ -476,8 +477,8 @@ module.exports = class {
 
     if((this.hour % 8) == 0 && this.hour != 0){
       this.hour = 0;
-      this.day ++;
       this.dayEnd();
+      this.day ++;
     }
   }
 
@@ -492,6 +493,10 @@ module.exports = class {
         current.daysLeft = current.reoccuring;
       }
     });
+
+    if(this.portfolio.cash < 0) {
+      this.gameLost = true;
+    }
   }
 
   pause(){
@@ -1007,38 +1012,53 @@ module.exports = class {
   dayEnd() {
     this.loop.pause();
 
-    let floatingDiv = `
-      <div class="window on-top" id="popup">
-        <h1 class="window title">Day End - Summary</h1>
-        <table class="window">`
+    if(this.calendar.gameLost){
+      let floatingDiv = `
+      <div class="window on-top">
+      <h1 class="window title">YOU LOST</h1>
+      <p> You failed to survive the game. Restart but do better this time </p>
+      <button id="game-lost" class="center">Reset</button>
+      </div>`
+      $('#wrapper').append(floatingDiv);
+      $('#game-lost').click(() => {
+        localStorage.clear();
+        location.reload();
+      })
+    } else {
 
-    let total = 0;
-    this.calendar.dailyExpenditures.forEach(current => {
-      if(current.daysLeft == current.reoccuring){
-        floatingDiv += `
+      let floatingDiv = `
+        <div class="window on-top" id="popup">
+          <h1 class="window title">Day End - Summary</h1>
+          <table class="window">`
+
+      let total = 0;
+      this.calendar.dailyExpenditures.forEach(current => {
+        if(current.daysLeft == current.reoccuring){
+          floatingDiv += `
+          <tr>
+            <td>${ current.name }</td>
+            <td>${ current.cost }</td>
+          </tr>`
+          total += current.cost;
+        }
+      })
+
+      floatingDiv += `
         <tr>
-          <td>${ current.name }</td>
-          <td>${ current.cost }</td>
-        </tr>`
-        total += current.cost;
-      }
-    })
+          <td>Total</td>
+          <td>${ total }</td>
+        </tr>
+        </table>
+        <button id="remove-popup">Continue</button>
+      </div>`
 
-    floatingDiv += `
-      <tr>
-        <td>Total</td>
-        <td>${ total }</td>
-      </tr>
-      </table>
-      <button id="remove-popup">Continue</button>
-    </div>`
+      $('#wrapper').append(floatingDiv);
 
-    $('#wrapper').append(floatingDiv);
-
-    $('#remove-popup').click(() => {
-      $('#popup').remove();
-      this.loop.pause();
-    })
+      $('#remove-popup').click(() => {
+        $('#popup').remove();
+        this.loop.pause();
+      });
+    }
   }
 
   update(){
