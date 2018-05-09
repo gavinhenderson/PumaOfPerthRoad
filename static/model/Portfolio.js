@@ -82,32 +82,4 @@ module.exports = class{
 
     return tempObj;
   }
-
-  /*save(){
-    localStorage.setItem('portfolio.cashValue',this.cash);
-    var stocks = [];
-    this.stocks.forEach(current=>{
-      var temp = {
-        name: current.stock.name,
-        quantity: current.quantity,
-        buyPrice: current.buyprice
-      }
-      stocks.push(temp);
-    });
-    //console.log(stocks)
-    localStorage.setItem('portfolio.stocks',JSON.stringify(stocks));
-  }
-
-  load(){
-    this.cash = parseInt(localStorage.getItem('portfolio.cashValue'));
-    var tStocks = JSON.parse(localStorage.getItem('portfolio.stocks'));
-    tStocks.forEach(current=>{
-      var temp = {
-        stock: this.market.getStock(current.name),
-        quantity: current.quantity,
-        buyprice: current.buyPrice
-      }
-      this.stocks.push(temp)
-    })
-  }*/
 }

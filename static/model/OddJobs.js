@@ -6,25 +6,25 @@ module.exports = class {
       name:       'Cleaning',
       payment:    10,
       timeTaken:  10, // Time in seconds
-      timeLeft:   0,
+      locked:     0
     },
     {
       name:       'Call Center',
       payment:    25,
       timeTaken:  15,
-      timeLeft:   0
+      locked:     1
     },
     {
       name:       'Paperboy',
-      payment:    8,
-      timeTaken:  2,
-      timeLeft:   0
+      payment:    20,
+      timeTaken:  7,
+      locked:      2
     },
     {
       name:       'Milkman',
-      payment:    15,
-      timeTaken:  11,
-      timeLeft:   0
+      payment:    25,
+      timeTaken:  5,
+      locked:     3
     }];
   }
 

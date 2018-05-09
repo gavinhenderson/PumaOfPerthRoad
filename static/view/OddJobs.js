@@ -1,5 +1,6 @@
 module.exports = class {
-  constructor( model, loop ){
+  constructor( model, calendar, loop ){
+    this.calendar = calendar;
     this.model = model;
     this.buttons = [];
     this.repopulate();
@@ -41,12 +42,23 @@ module.exports = class {
     })
   }
 
+  lockButtons(){
+    this.model.jobs.forEach(current => {
+      if(current.locked > this.calendar.day) {
+        $(`#${ current.name.replace(/ /g, '-') }-work`).text('Locked');
+        $(`#${ current.name.replace(/ /g, '-') }-work`).prop("disabled",true);
+      } else {
+        $(`#${ current.name.replace(/ /g, '-') }-work`).text('Work');
+      }
+    })
+  }
+
   update(){
-    //console.log(this.model.working)
     if(this.model.working){
       this.disableButtons();
     } else {
       this.enableButtons();
+      this.lockButtons();
     }
   }
 }

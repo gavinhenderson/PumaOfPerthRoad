@@ -76,7 +76,7 @@ module.exports = class {
     this.update();
 
     $('#bot-shop-title').click(() => {
-      let desc = `Odd Jobs is a place for you to make a little bit of money and all you need is some time. Each job has a wage and an amount of time it takes to complete. If you chose to do the job you won't be able to do any other jobs while you complete the first one.`;
+      let desc = `The bot shop is a place where you can automate processes so that you have a chance of making money without having to do anything.`;
       require('./Help.js')("Bot Shop Help", desc, loop);
     });
   }
@@ -334,15 +334,15 @@ const OddJobsView  = require('./../view/OddJobs.js');
 const OddJobsModel = require('./../model/OddJobs.js');
 
 class OddJobsController {
-  constructor(Loop, Portfolio) {
+  constructor(Loop, Portfolio, Calendar) {
     this.model  = new OddJobsModel( Portfolio.model );
-    this.view   = new OddJobsView( this.model, Loop );
+    this.view   = new OddJobsView( this.model, Calendar.model, Loop );
     Loop.addViewItem( this.view );
   }
 }
 
-module.exports = (Loop, Portfolio) => {
-  let controller = new OddJobsController(Loop, Portfolio);
+module.exports = (Loop, Portfolio, Calendar) => {
+  let controller = new OddJobsController(Loop, Portfolio, Calendar);
 
   return controller;
 }
@@ -400,7 +400,7 @@ $(document).ready(function() {
   let Broker          = require('./controller/Broker.js')(Loop, Market, Portfolio);
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, GameSave);
   let Calendar        = require('./controller/Calendar.js')(Loop, Portfolio, GameConsole, GameSave);
-  let OddJobs         = require('./controller/OddJobs.js')(Loop, Portfolio);
+  let OddJobs         = require('./controller/OddJobs.js')(Loop, Portfolio, Calendar);
 
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
@@ -659,25 +659,25 @@ module.exports = class {
       name:       'Cleaning',
       payment:    10,
       timeTaken:  10, // Time in seconds
-      timeLeft:   0,
+      locked:     0
     },
     {
       name:       'Call Center',
       payment:    25,
       timeTaken:  15,
-      timeLeft:   0
+      locked:     1
     },
     {
       name:       'Paperboy',
-      payment:    8,
-      timeTaken:  2,
-      timeLeft:   0
+      payment:    20,
+      timeTaken:  7,
+      locked:      2
     },
     {
       name:       'Milkman',
-      payment:    15,
-      timeTaken:  11,
-      timeLeft:   0
+      payment:    25,
+      timeTaken:  5,
+      locked:     3
     }];
   }
 
@@ -777,34 +777,6 @@ module.exports = class{
 
     return tempObj;
   }
-
-  /*save(){
-    localStorage.setItem('portfolio.cashValue',this.cash);
-    var stocks = [];
-    this.stocks.forEach(current=>{
-      var temp = {
-        name: current.stock.name,
-        quantity: current.quantity,
-        buyPrice: current.buyprice
-      }
-      stocks.push(temp);
-    });
-    //console.log(stocks)
-    localStorage.setItem('portfolio.stocks',JSON.stringify(stocks));
-  }
-
-  load(){
-    this.cash = parseInt(localStorage.getItem('portfolio.cashValue'));
-    var tStocks = JSON.parse(localStorage.getItem('portfolio.stocks'));
-    tStocks.forEach(current=>{
-      var temp = {
-        stock: this.market.getStock(current.name),
-        quantity: current.quantity,
-        buyprice: current.buyPrice
-      }
-      this.stocks.push(temp)
-    })
-  }*/
 }
 
 },{}],19:[function(require,module,exports){
@@ -1147,7 +1119,8 @@ module.exports = class{
 
 },{"./Help.js":23}],25:[function(require,module,exports){
 module.exports = class {
-  constructor( model, loop ){
+  constructor( model, calendar, loop ){
+    this.calendar = calendar;
     this.model = model;
     this.buttons = [];
     this.repopulate();
@@ -1189,12 +1162,23 @@ module.exports = class {
     })
   }
 
+  lockButtons(){
+    this.model.jobs.forEach(current => {
+      if(current.locked > this.calendar.day) {
+        $(`#${ current.name.replace(/ /g, '-') }-work`).text('Locked');
+        $(`#${ current.name.replace(/ /g, '-') }-work`).prop("disabled",true);
+      } else {
+        $(`#${ current.name.replace(/ /g, '-') }-work`).text('Work');
+      }
+    })
+  }
+
   update(){
-    //console.log(this.model.working)
     if(this.model.working){
       this.disableButtons();
     } else {
       this.enableButtons();
+      this.lockButtons();
     }
   }
 }
