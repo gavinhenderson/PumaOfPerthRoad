@@ -51,9 +51,9 @@ module.exports = class {
     this.loop.pause();
 
     let floatingDiv = `
-      <div class="floating window" id="popup">
-        <h1 class="floating">Day End - Summary</h1>
-        <table class="floating">`
+      <div class="window on-top" id="popup">
+        <h1 class="window title">Day End - Summary</h1>
+        <table class="window">`
 
     let total = 0;
     this.calendar.dailyExpenditures.forEach(current => {

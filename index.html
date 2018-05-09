@@ -4,103 +4,120 @@
   <link rel="stylesheet" type="text/css" href="jquery-ui.css">
 </head>
 
-<body>
-  <div class="wrapper" id="wrapper">
+<body id="wrapper">
 
-    <!-- ODD JOBS -->
-    <div class="odd-jobs window">
-      <h1 class="odd-jobs">Odd Jobs</h1>
-      <table class="odd-jobs" id="odd-jobs-table">
-        <tr>
-          <th>Job</th>
-          <th>Wage</th>
-          <th>Time</th>
-          <th>Select<th>
-        </tr>
-      </table>
+  <div class="row">
+
+    <div class="column">
+
+      <!-- ODD JOBS -->
+      <div class="odd-jobs window stack">
+        <h1 class="window title">Odd Jobs</h1>
+        <table class="window" id="odd-jobs-table">
+          <tr>
+            <th>Job</th>
+            <th>Wage</th>
+            <th>Time</th>
+            <th>Select<th>
+          </tr>
+        </table>
+      </div>
+
     </div>
 
-    <!-- STOCK VIEWER -->
-    <div class="stock-viewer window">
-      <h1 class="stock-viewer">Stocks</h1>
-      <table id="stock-viewer" class="stock-viewer">
-      </table>
+    <div class="column">
+
+      <!-- STOCK VIEWER -->
+      <div class="stock-viewer window stack">
+        <h1 class="window title">Stocks</h1>
+        <table id="stock-viewer" class="window">
+        </table>
+      </div>
+
+      <!-- BUY/SELL -->
+      <div class="manual-buysell window stack">
+        <h1 class="window title">Manual Buy/Sell</h1>
+        <div class="center">
+          <select class="manual-buysell" id="stockSelecter">
+          </select>
+          <input type="number" id="buysell-quantity" class="manual-buysell" value="1"></input>
+        </div>
+        <div class="center">
+          $<p class="no-new-line" id="stockPrice">342332</p> x <p id="displayQuantity" class="no-new-line">10</p>
+          <p id="tempTotal">3242139</p>
+        </div>
+        <div class="center">
+          <button id="buyButton" disabled>Confirm Buy</button>
+          <button id="sellButton" disabled>Confirm Sell</button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- BUY/SELL -->
-    <div class="manual-buysell window">
-      <h1 class="manual-buysell">Manual Buy/Sell</h1>
-      <div class="center">
-        <select class="manual-buysell" id="stockSelecter">
-        </select>
-        <input type="number" id="buysell-quantity" class="manual-buysell" value="1"></input>
+    <div class="column">
+
+      <!-- PORTFOLIO -->
+      <div class="portfolio window stack">
+        <h1 class="window title">Portfolio</h1>
+        <div class="center">
+          Cash To Spend $<p class="no-new-line" id="cash-value"></p>
+        </div>
+        <div class="center">
+          Stock Total $<p class="no-new-line" id="stock-value"></p>
+        </div>
+        <div class="center">
+          Net Total $<p class="no-new-line" id="total-value"></p>
+        </div>
+        <table class="window" id="portfolio-list">
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+          </tr>
+        </table>
       </div>
-      <div class="center">
-        $<p class="no-new-line" id="stockPrice">342332</p> x <p id="displayQuantity" class="no-new-line">10</p>
-        <p id="tempTotal">3242139</p>
+
+      <!-- BOT-SHOP -->
+      <div class="bot-shop window stack">
+        <h1 class="window title">Bot Shop</h1>
+        <table class="window" id="bot-shop-table">
+          <tr>
+            <th>Bot</th>
+            <th>Level</th>
+            <th>Cost</th>
+            <th>Upgrade</th>
+          </tr>
+        </table>
       </div>
-      <div class="center">
-        <button id="buyButton" disabled>Confirm Buy</button>
-        <button id="sellButton" disabled>Confirm Sell</button>
-      </div>
+
     </div>
 
-    <!-- PORTFOLIO -->
-    <div class="portfolio window">
-      <h1 class="portfolio">Portfolio</h1>
-      <div class="center">
-        Cash To Spend $<p class="no-new-line" id="cash-value"></p>
-      </div>
-      <div class="center">
-        Stock Total $<p class="no-new-line" id="stock-value"></p>
-      </div>
-      <div class="center">
-        Net Total $<p class="no-new-line" id="total-value"></p>
-      </div>
-      <table class="portfolio" id="portfolio-list">
-        <tr>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>Total</th>
-        </tr>
-      </table>
-    </div>
+    <div class="column">
 
-    <!-- BOT-SHOP -->
-    <div class="bot-shop window">
-      <h1 class="bot-shop">Bot Shop</h1>
-      <table class="bot-shop" id="bot-shop-table">
-        <tr>
-          <th>Bot</th>
-          <th>Level</th>
-          <th>Cost</th>
-          <th>Upgrade</th>
-        </tr>
-      </table>
-    </div>
+      <!-- CALENDAR -->
+      <div class="calendar window stack">
+        <h1 class="window title">Calendar</h1>
+        <h2 id="day" class="center calendar"></h2>
+        <h2 id="time" class="center calendar"></h2>
+        <button id="pause-game" class="calendar">Pause</button>
+        <button id="reset-game" class="calendar">Reset Game</button>
+        <table class="window" id="daily-expenditures">
+          <tr>
+            <th>Name</th>
+            <th>Cost</th>
+            <th>Days Left</th>
+          </tr>
+        </table>
+      </div>
 
-    <!-- CALENDAR -->
-    <div class="calendar window">
-      <h1 class="calendar">Calendar</h1>
-      <h2 id="day" class="center calendar"></h2>
-      <h2 id="time" class="center calendar"></h2>
-      <button id="pause-game" class="calendar">Pause</button>
-      <button id="reset-game" class="calendar">Reset Game</button>
-      <table class="calendar" id="daily-expenditures">
-        <tr>
-          <th>Name</th>
-          <th>Cost</th>
-          <th>Days Left</th>
-        </tr>
-      </table>
     </div>
 
     <!-- CONSOLE WINDOW -->
     <div class="console" id="console">
     </div>
 
-  </div>
+  </div> <!-- row -->
 
   <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
