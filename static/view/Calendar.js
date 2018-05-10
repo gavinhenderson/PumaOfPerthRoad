@@ -56,17 +56,7 @@ module.exports = class {
     this.loop.pause();
 
     if(this.calendar.gameLost){
-      let floatingDiv = `
-      <div class="window on-top">
-      <h1 class="window title">YOU LOST</h1>
-      <p> You failed to survive the game. Restart but do better this time </p>
-      <button id="game-lost" class="center">Reset</button>
-      </div>`
-      $('#wrapper').append(floatingDiv);
-      $('#game-lost').click(() => {
-        localStorage.clear();
-        location.reload();
-      })
+      GameEnd(this.calendar.day)
     } else {
 
       let floatingDiv = `

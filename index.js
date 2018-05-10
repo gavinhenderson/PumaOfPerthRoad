@@ -1,14 +1,36 @@
-const express = require('express');
-const app     = express();
-const debugPort    = 80;
-const fs      = require('fs');
-const https   = require('https');
-const http    = require('http')
+const express     = require('express');
+const app         = express();
+const debugPort   = 80;
+const fs          = require('fs');
+const https       = require('https');
+const http        = require('http')
+const bodyParser  = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+let debug = false;
 
-const debug = false;
+if(process.argv[2] == "--debug"){ debug = true; }
 
 //Serve src statically
 app.use(express.static('public'))
+
+let leaderboard = [
+  {
+    name: "Gavin Henderson",
+    id: "1606071342761788",
+    score: 10
+  },
+  {
+    name: "Adam Hirst",
+    id: "100009928172288",
+    score: 8
+  },
+  {
+    name: "Connor Haining",
+    id: "1815005076",
+    score: 2
+  }
+]
 
 //Root
 app.get('/', function (req, res) {
@@ -18,6 +40,32 @@ app.get('/', function (req, res) {
 app.get('/leaderboard', function(req, res) {
   res.sendFile('/leaderboard.html', { root : __dirname })
 });
+
+app.get('/leaderboard/scores', function(req, res) {
+  res.send( leaderboard.sort((a,b)=>{return a.score<b.score}) )
+})
+
+app.post('/leaderboard/newScore', function(req, res) {
+  console.log(req.body)
+  let body = req.body;
+  body.score = parseInt(body.score)
+
+  for(let i=0 ; i< leaderboard.length; i++){
+    let current = leaderboard[i];
+    if(current.id == body.id){
+      if(body.score > current.score){
+        current.score = body.score;
+      }
+      res.send(leaderboard.sort((a,b)=>{return a.score<b.score}));
+      return;
+    }
+  };
+
+  leaderboard.push(body);
+
+  res.send(leaderboard);
+
+})
 
 if (debug) {
   //Listen on port 80
