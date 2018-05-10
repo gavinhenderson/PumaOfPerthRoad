@@ -32,6 +32,20 @@ if (debug) {
   https.createServer(opts, app).listen(443, () => {
     console.log('Running on 443');
   });
+  // Secondary http app
+  var httpApp = express();
+  var httpRouter = express.Router();
+  httpApp.use('*', httpRouter);
+  httpRouter.get('*', function(req, res){
+      var host = req.get('Host');
+      // replace the port in the host
+      host = host.replace(/:\d+$/, ":"+app.get('port'));
+      // determine the redirect destination
+      var destination = ['https://', host, req.url].join('');
+      return res.redirect(destination);
+  });
+  var httpServer = http.createServer(httpApp);
+  httpServer.listen(80);
 }
 
 
