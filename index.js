@@ -6,7 +6,7 @@ const opts = {
   key: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/fullchain.pem'),
   cert: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/privkey.pem')
 };
-const https   = require('https')(opts, app);
+const https   = require('https').createServer(opts, app);
 
 const debug = false;
 
