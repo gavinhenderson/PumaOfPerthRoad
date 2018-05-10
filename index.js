@@ -19,11 +19,10 @@ app.get('/leaderboard', function(req, res) {
   res.sendFile('/leaderboard.html', { root : __dirname })
 });
 
-
 if (debug) {
   //Listen on port 80
   app.listen(debugPort, () => {
-    console.log('Running on port:'+port+'!')
+    console.log('Running on port:'+debugPort+'!')
   });
 } else {
   const opts = {
