@@ -2,10 +2,6 @@ const express = require('express');
 const app     = express();
 const debugPort    = 80;
 const fs      = require('fs');
-const opts = {
-  key: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/fullchain.pem')
-};
 const https   = require('https');
 const http    = require('http')
 
@@ -30,6 +26,10 @@ if (debug) {
     console.log('Running on port:'+port+'!')
   });
 } else {
+  const opts = {
+    key: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/fullchain.pem')
+  };
   https.createServer(opts, app).listen(443, () => {
     console.log('Running on 443');
   });
