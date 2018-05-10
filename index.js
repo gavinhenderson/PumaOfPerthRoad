@@ -1,12 +1,12 @@
 const express = require('express');
 const app     = express();
 const debugPort    = 80;
+const fs      = require('fs');
 const opts = {
   key: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/fullchain.pem'),
   cert: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/privkey.pem')
 };
 const https   = require('https')(opts, app);
-const fs      = require('fs');
 
 const debug = false;
 
