@@ -6,7 +6,7 @@ const opts = {
   key: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/fullchain.pem'),
   cert: fs.readFileSync('/etc/letsencrypt/live/pumaofperthroad.com/privkey.pem')
 };
-const https   = require('https').createServer(opts, app);
+const https   = require('https');
 
 const debug = false;
 
@@ -29,7 +29,7 @@ if (debug) {
     console.log('Running on port:'+port+'!')
   });
 } else {
-  https.listen(443, () => {
+  https.createServer(opts, app).listen(443, () => {
     console.log('Running on 443');
   });
 }
