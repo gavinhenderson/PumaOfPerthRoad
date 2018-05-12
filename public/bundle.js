@@ -171,7 +171,6 @@ module.exports = {
     let currentCap      = (portfolio.cash/100) * buyingCaps[bot.level]; // Get the cash value
     const momentumCaps  = [0.1, 0.2, 0.3, 0.4, 0.5]
 
-
     // Loop through all the stocks
     market.iterate((current)=>{
       if(current.price < currentCap && current.momentum > momentumCaps[bot.level]){
@@ -190,12 +189,24 @@ module.exports = {
 module.exports = {
   name: "Auto-Sell",
   description: "This bot will automatically sell stocks when they are crashing or when they are thriving",
-  costs: [100,200,1000,3000],
+  costs: [100, 200, 1000, 3000],
   behaviour: function(bot, market, portfolio) {
+    // Calculate the stock value
+    const StockValue  = portfolio.value();
+    const SellCaps    = [40, 50, 60, 70];
+    let   SellCap     = (StockValue/100) * SellCaps[bot.level];
+
     portfolio.stocks.forEach(current => {
-      // console.log(current);
-      if(current.stock.momentum < 0){
-        portfolio.sell(current.stock, current.quantity);
+      //if(current.stock.momentum < 0){
+        //portfolio.sell(current.stock, current.quantity);
+      //}
+      if(current.stock.price < SellCap && current.stock.momentum < 0){
+        // Calculate how many stocks to buy
+        let quant = Math.floor(SellCap / current.stock.price)
+
+        // Buy stocks
+        SellCap -= current.stock.price * quant;
+        portfolio.sell(current.stock, quant);
       }
     });
   }
@@ -419,6 +430,7 @@ module.exports = (Loop) => {
 $(document).ready(function() {
   let GameConsole     = require('./view/Console.js')();
   let Loop            = require('./model/Loop.js')();
+  let WelcomeWindow   = require('./controller/WelcomeWindow.js')(Loop);
 
   //let GameSave        = store.get('GameSave');
   let GameSave = undefined // Deprecate game saves
@@ -431,8 +443,6 @@ $(document).ready(function() {
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, Calendar, GameSave);
 
   Market.setCalendar(Calendar);
-
-  let WelcomeWindow   = require('./controller/WelcomeWindow.js')(Loop);
 
   /*
   Loop.addRepeating(() => {
@@ -484,11 +494,27 @@ module.exports = class {
       hidden:       false
     },
     {
-      name:         "Mortgage",
-      description:  "Gotta keep make sure you keep your house",
+      name:         "Car Insurance",
+      description:  "Make sure your car is kept insured",
       reoccuring:   8, // Time in days
       daysLeft:     8, // Time in days
       cost:         1000,
+      hidden:       false
+    },
+    {
+      name:         "Mortgage",
+      description:  "Put a roof over your head",
+      reoccuring:   12,
+      daysLeft:     12,
+      cost:         3000,
+      hidden:       false
+    },
+    {
+      name:         "Car Breakdown",
+      description:  "Your car wont start",
+      reoccuring:   14,
+      daysLeft:     14,
+      cost:         8000,
       hidden:       false
     }];
   }
@@ -1340,7 +1366,7 @@ module.exports = class {
 
   spawnWindow(){
     $('body').append(`
-      <div id="welcome-window" style="width:500px; left: calc(50% - 250px); top:10px;" class="window on-top">
+      <div id="welcome-window" style="width:500px; left: 10px; top:10px;" class="window on-top">
         <h1 class="window title">Welcome to Puma of Perth Road</h1>
         <p style="text-align: justify">Your task is to see how many days you last as an up and coming stock broker in the trading city of Dundee</p>
         <p style="text-align: justify">If throughout the game you need any help simply click the title of a window and it will tell you what to do</p>
@@ -1352,7 +1378,7 @@ module.exports = class {
         <p style="text-align: justify; margin-top:5px;">This is where you will learn how much you are worth. When stocks appear this is where you will see which stocks you own and how much they are worth. Make sure you stay positive in the money.</p>
         <h3 class="window subtitle">Other</h3>
         <p style="text-align: justify; margin-top:5px;">As the game goes on you more windows will appear. You will be able to buy and sell stocks as well as buy and upgrade robots to do the trading for you. The rest is up to you to figure out. Good luck</p>
-        <button id="close-welcome-window">Start Game</button>
+        <button id="close-welcome-window" style="font-size: 20px;">Start Game</button>
       </div>
     `);
 

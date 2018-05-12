@@ -34,11 +34,27 @@ module.exports = class {
       hidden:       false
     },
     {
-      name:         "Mortgage",
-      description:  "Gotta keep make sure you keep your house",
+      name:         "Car Insurance",
+      description:  "Make sure your car is kept insured",
       reoccuring:   8, // Time in days
       daysLeft:     8, // Time in days
       cost:         1000,
+      hidden:       false
+    },
+    {
+      name:         "Mortgage",
+      description:  "Put a roof over your head",
+      reoccuring:   12,
+      daysLeft:     12,
+      cost:         3000,
+      hidden:       false
+    },
+    {
+      name:         "Car Breakdown",
+      description:  "Your car wont start",
+      reoccuring:   14,
+      daysLeft:     14,
+      cost:         8000,
       hidden:       false
     }];
   }

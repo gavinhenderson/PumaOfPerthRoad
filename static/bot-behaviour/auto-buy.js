@@ -7,7 +7,6 @@ module.exports = {
     let currentCap      = (portfolio.cash/100) * buyingCaps[bot.level]; // Get the cash value
     const momentumCaps  = [0.1, 0.2, 0.3, 0.4, 0.5]
 
-
     // Loop through all the stocks
     market.iterate((current)=>{
       if(current.price < currentCap && current.momentum > momentumCaps[bot.level]){

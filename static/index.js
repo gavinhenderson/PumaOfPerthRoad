@@ -1,6 +1,7 @@
 $(document).ready(function() {
   let GameConsole     = require('./view/Console.js')();
   let Loop            = require('./model/Loop.js')();
+  let WelcomeWindow   = require('./controller/WelcomeWindow.js')(Loop);
 
   //let GameSave        = store.get('GameSave');
   let GameSave = undefined // Deprecate game saves
@@ -13,8 +14,6 @@ $(document).ready(function() {
   let BotShop         = require('./controller/BotShop.js')(Loop, Portfolio, Market, Calendar, GameSave);
 
   Market.setCalendar(Calendar);
-
-  let WelcomeWindow   = require('./controller/WelcomeWindow.js')(Loop);
 
   /*
   Loop.addRepeating(() => {
