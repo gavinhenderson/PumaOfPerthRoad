@@ -69,8 +69,8 @@ module.exports = class {
         if(current.daysLeft == current.reoccuring){
           floatingDiv += `
           <tr>
-            <td>${ current.name }</td>
-            <td>${ current.cost }</td>
+            <td>${ current.name }: </td>
+            <td>-$${ current.cost }</td>
           </tr>`
           total += current.cost;
         }
@@ -78,9 +78,13 @@ module.exports = class {
 
       floatingDiv += `
         <tr>
-          <td>Total</td>
-          <td>${ total }</td>
+          <td>Total: </td>
+          <td>-$${ total }</td>
         </tr>
+        <tr><td></br></td></tr>
+        <tr>
+          <td>Cash Left: </td>
+          <td>$${ this.calendar.portfolio.cash }</td>
         </table>
         <button id="remove-popup">Continue</button>
       </div>`

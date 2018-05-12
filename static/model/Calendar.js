@@ -28,16 +28,16 @@ module.exports = class {
     {
       name:         'Buy Food',
       description:  'Eat to live',
-      reoccuring:   2,
-      daysLeft:     4,
+      reoccuring:   3,
+      daysLeft:     3,
       cost:         50,
       hidden:       false
     },
     {
       name:         "Mortgage",
       description:  "Gotta keep make sure you keep your house",
-      reoccuring:   5, // Time in days
-      daysLeft:     10, // Time in days
+      reoccuring:   8, // Time in days
+      daysLeft:     8, // Time in days
       cost:         1000,
       hidden:       false
     }];

@@ -2,6 +2,7 @@
 <head>
   <link rel="stylesheet" type="text/css" href="index.css">
   <link rel="stylesheet" type="text/css" href="jquery-ui.css">
+  <title>Puma of Perth Road - The Game</title>
 </head>
 
 <body id="wrapper">
@@ -59,7 +60,22 @@
       <!-- PORTFOLIO -->
       <div class="portfolio window stack">
         <h1 class="window title" id="portfolio-title">Portfolio</h1>
-        <div class="center">
+
+        <table class="window">
+          <tr>
+            <td>Total Cash: </td>
+            <td>$<p class="no-new-line" id="cash-value"></p></td>
+          </tr>
+          <tr>
+            <td>Stock Value: </td>
+            <td>$<p class="no-new-line" id="stock-value"></p></td>
+          </tr>
+          <tr>
+            <td>Net Value: </td>
+            <td>$<p class="no-new-line" id="total-value"></p></td>
+        </table>
+
+        <!--<div class="center">
           Cash To Spend $<p class="no-new-line" id="cash-value"></p>
         </div>
         <div class="center">
@@ -67,7 +83,7 @@
         </div>
         <div class="center">
           Net Total $<p class="no-new-line" id="total-value"></p>
-        </div>
+        </div>-->
         <table class="window" id="portfolio-list">
           <tr>
             <th>Name</th>

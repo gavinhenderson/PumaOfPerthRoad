@@ -2,7 +2,8 @@ $(document).ready(function() {
   let GameConsole     = require('./view/Console.js')();
   let Loop            = require('./model/Loop.js')();
 
-  let GameSave        = store.get('GameSave');
+  //let GameSave        = store.get('GameSave');
+  let GameSave = undefined // Deprecate game saves
 
   let Market          = require('./controller/Market.js')(Loop, GameSave);
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole, GameSave);
@@ -13,6 +14,9 @@ $(document).ready(function() {
 
   Market.setCalendar(Calendar);
 
+  let WelcomeWindow   = require('./controller/WelcomeWindow.js')(Loop);
+
+  /*
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
     let saveGame = {};
@@ -22,4 +26,5 @@ $(document).ready(function() {
     saveGame.Calendar   = Calendar.getSaveInfo();
     store.set('GameSave', saveGame);
   }, 60000);
+  */
 });

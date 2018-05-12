@@ -16,8 +16,8 @@ module.exports = class {
       $('#odd-jobs-table').append(`
         <tr>
           <td>${ current.name }</td>
-          <td>${ current.payment }</td>
-          <td>${ current.timeTaken }</td>
+          <td class = "center">$${ current.payment }</td>
+          <td class = "center">${ current.timeTaken }s</td>
           <td><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
         </tr>
       `);
