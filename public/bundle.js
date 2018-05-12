@@ -468,6 +468,28 @@ module.exports = class {
     this.hour        = 0;
     this.minute      = 0;
     this.gameLost    = false;
+    this.dayEndMessages = [
+      {
+        day: 1, // The start of this day
+        message: "You are now qualified to work in a call center"
+      },
+      {
+        day: 2,
+        message: "You now have the stamina to be a paperboy"
+      },
+      {
+        day: 3,
+        message: "You now have a van so can deliver milk."
+      },
+      {
+        day: 4,
+        message: "Welcome to the big leagues, trade some stocks to make money"
+      },
+      {
+        day: 6,
+        message: "Employ some of the clever bots to get an edge and make extra money"
+      }
+    ]
     this.dailyExpenditures = [
     {
       name:         "Heating",
@@ -537,6 +559,11 @@ module.exports = class {
       this.hour = 0;
       this.dayEnd();
       this.day ++;
+      this.dayEndMessages.forEach(current => {
+        if(current.day == this.day){
+          this.GameConsole.message(current.message);
+        }
+      });
     }
   }
 
@@ -551,6 +578,8 @@ module.exports = class {
         current.daysLeft = current.reoccuring;
       }
     });
+
+
 
     if(this.portfolio.cash < 0) {
       this.gameLost = true;
