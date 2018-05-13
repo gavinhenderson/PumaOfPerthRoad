@@ -84,7 +84,7 @@ module.exports = class {
         <tr><td></br></td></tr>
         <tr>
           <td>Cash Left: </td>
-          <td>$${ this.calendar.portfolio.cash.toFixed(2); }</td>
+          <td>$${ this.calendar.portfolio.cash.toFixed(2) }</td>
         </table>
         <button id="remove-popup">Continue</button>
       </div>`
