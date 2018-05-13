@@ -42,6 +42,7 @@ app.get('/leaderboard', function(req, res) {
 });
 
 app.get('/leaderboard/scores', function(req, res) {
+  console.log(leaderboard)
   res.send( leaderboard.sort((a,b)=>{return a.score<b.score}) )
 })
 

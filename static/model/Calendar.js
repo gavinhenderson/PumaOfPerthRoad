@@ -99,11 +99,14 @@ module.exports = class {
       this.hour = 0;
       this.dayEnd();
       this.day ++;
+
       this.dayEndMessages.forEach(current => {
+        console.log(current.day + " = " + this.day)
         if(current.day == this.day){
           this.GameConsole.message(current.message);
         }
       });
+
     }
   }
 

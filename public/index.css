@@ -63,6 +63,11 @@ p.console {
   padding-right: 5px;
 }
 
+.profile-pic {
+  height: 50;
+  width: 50;
+}
+
 /* Window */
 div.window {
   background-image: url("window.jpg");

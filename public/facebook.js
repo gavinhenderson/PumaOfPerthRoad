@@ -32,13 +32,13 @@ function GameEnd(givenDay){
     floatingDiv += `<p><img style="width:200px" src="facebook.png" onclick="SetDetails(${givenDay})"></p>`
     floatingDiv += `<button id="game-lost" class="center">Reset</button></div>`
     $('#wrapper').append(floatingDiv);
-    
+
   } else {
 
     floatingDiv += `
     <table id="leaderboard-table">
       <tr>
-        <th>Image</th>
+        <th></th>
         <th>User</th>
         <th>Score</th>
       </tr>
@@ -57,7 +57,7 @@ function GameEnd(givenDay){
       data.forEach(current => {
         $('#leaderboard-table').append(`
           <tr>
-            <td><img src="https://graph.facebook.com/${ current.id }/picture"/></td>
+            <td><img class="profile-pic" src="https://graph.facebook.com/${ current.id }/picture"/></td>
             <td>${ current.name }</td>
             <td>${ current.score }</td>
           </tr>
