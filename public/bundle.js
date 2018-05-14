@@ -1183,8 +1183,26 @@ module.exports = () => {
 }
 
 },{}],24:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],25:[function(require,module,exports){
+module.exports = (title, description, loop) => {
+  loop.pause();
+
+  let DialogWindow = `
+    <div class="window on-top" id="help">
+      <h1 class="window title">${ title }</h1>
+      <p class="help">${ description }</p>
+      <button class="center" id="resume">Resume</button>
+    </div>`
+
+  $('body').append(DialogWindow);
+
+  $('#resume').click(() => {
+    loop.pause();
+    $('#help').remove();
+  });
+
+}
+
+},{}],25:[function(require,module,exports){
 module.exports = class{
   constructor(market, loop, calendar){
     this.calendar   = calendar
