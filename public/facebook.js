@@ -44,7 +44,7 @@ function GameEnd(givenDay){
       </tr>
     </table>`
 
-    floatingDiv += `<button id="game-lost" class="center">Reset</button></div>`
+    floatingDiv += `<button id="game-lost-leaderboard" class="center">Reset</button></div>`
     $('#wrapper').append(floatingDiv);
 
     $.post("leaderboard/newScore",
@@ -69,6 +69,10 @@ function GameEnd(givenDay){
 
 
   $('#game-lost').click(() => {
+    localStorage.clear();
+    location.reload();
+  });
+  $('#game-lost-leaderboard').click(() => {
     localStorage.clear();
     location.reload();
   });
