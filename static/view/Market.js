@@ -16,6 +16,16 @@ module.exports = class{
     // Clear the viewer
     $('#stock-viewer').empty();
 
+    $('#stock-viewer').append(`
+      <tr>
+        <th>Stock</th>
+        <th>Price</th>
+        <th>History</th>
+        <th></th>
+        <th></th>
+      </tr>
+    `);
+
     // Loop through all the stocks
     this.market.iterate((stock) => {
       // Set icon to up or down

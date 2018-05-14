@@ -2,10 +2,15 @@ module.exports = {
   name: "Auto-Buy",
   description: "This bot will automatically buy stocks when they are about to make a lot of money",
   costs: [100,200,500,3000],
-  behaviour: function(bot, market, portfolio) {
+  behaviour: function(bot, market, portfolio, calendar) {
     const buyingCaps    = [10, 20, 30, 40, 50]; // Given in percentage of cash
     let currentCap      = (portfolio.cash/100) * buyingCaps[bot.level]; // Get the cash value
     const momentumCaps  = [0.1, 0.2, 0.3, 0.4, 0.5]
+
+    if(calendar.hour > 5){
+      console.log("bot sleeping");
+      return;
+    }
 
     // Loop through all the stocks
     market.iterate((current)=>{

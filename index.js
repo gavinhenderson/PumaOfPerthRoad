@@ -22,13 +22,18 @@ let leaderboard = [
   },
   {
     name: "Adam Hirst",
-    id: "100009928172288",
+    id: "615671272107140",
     score: 8
   },
   {
     name: "Connor Haining",
     id: "1815005076",
     score: 2
+  },
+  {
+    name: "Karen Elizabeth Jefferson Petrie",
+    id: "10156445677894359",
+    score: 8
   }
 ]
 
@@ -63,8 +68,7 @@ app.post('/leaderboard/newScore', function(req, res) {
   };
 
   leaderboard.push(body);
-
-  res.send(leaderboard);
+  res.send(leaderboard.sort((a,b)=>{return a.score<b.score}));
 
 })
 

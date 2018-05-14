@@ -6,7 +6,7 @@ class BotShopController {
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
-    this.Model      = new Model( Market, Portfolio );
+    this.Model      = new Model( Market, Portfolio, Calendar );
     this.View       = new View( this.Model, Loop, Calendar.model );
 
     this.Loop.addViewItem( this.View );

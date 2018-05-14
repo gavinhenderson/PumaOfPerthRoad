@@ -17,7 +17,7 @@ module.exports = class {
         <tr>
           <td>${ current.name }</td>
           <td class = "center">$${ current.payment }</td>
-          <td class = "center">${ current.timeTaken }s</td>
+          <td class = "center">${ current.gameTime }</td>
           <td><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
         </tr>
       `);

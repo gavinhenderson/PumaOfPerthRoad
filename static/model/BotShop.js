@@ -1,10 +1,11 @@
 const Bot = require('./Bot.js');
 
 module.exports = class {
-  constructor ( market, portfolio ) {
+  constructor ( market, portfolio, calendar ) {
     this.portfolio = portfolio.model;
     this.market    = market.model;
-    this.bots = [];
+    this.calendar  = calendar.model;
+    this.bots      = [];
   }
 
   setLevel(name, level){
@@ -22,7 +23,7 @@ module.exports = class {
 
   update () {
     this.bots.forEach(current => {
-      current.action(this.market, this.portfolio);
+      current.action(this.market, this.portfolio, this.calendar);
     })
   }
 

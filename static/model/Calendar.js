@@ -111,6 +111,8 @@ module.exports = class {
   }
 
   dayEnd(){
+    console.timeEnd('day');
+    console.time('day')
     this.dailyExpenditures.forEach(current => {
       current.daysLeft--;
       if(current.daysLeft == 0){

@@ -5,7 +5,7 @@ class Console{
 
   message(message){
     var date = new Date();
-    var newMessage = date.getHours()+":"+date.getMinutes() + " > "+ message;
+    var newMessage = ("0" + date.getHours()).slice(-2)+":"+("0" + date.getMinutes()).slice(-2) + " > "+ message;
     this.consoleDomElement.prepend(`<p class="console">${ newMessage }</p>`);
   }
 

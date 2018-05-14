@@ -8,9 +8,9 @@ module.exports = class {
     this.level        = ops.level || 0;
   }
 
-  action(market, portfolio) {
+  action(market, portfolio, calendar) {
     if(this.level>0){
-      this.behaviour(this, market, portfolio);
+      this.behaviour(this, market, portfolio, calendar);
     }
   }
 }
@@ -19,10 +19,11 @@ module.exports = class {
 const Bot = require('./Bot.js');
 
 module.exports = class {
-  constructor ( market, portfolio ) {
+  constructor ( market, portfolio, calendar ) {
     this.portfolio = portfolio.model;
     this.market    = market.model;
-    this.bots = [];
+    this.calendar  = calendar.model;
+    this.bots      = [];
   }
 
   setLevel(name, level){
@@ -40,7 +41,7 @@ module.exports = class {
 
   update () {
     this.bots.forEach(current => {
-      current.action(this.market, this.portfolio);
+      current.action(this.market, this.portfolio, this.calendar);
     })
   }
 
@@ -148,7 +149,7 @@ module.exports = (title, description, loop) => {
   let DialogWindow = `
     <div class="window on-top" id="help">
       <h1 class="window title">${ title }</h1>
-      <p class="description help">${ description }</p>
+      <p class="help">${ description }</p>
       <button class="center" id="resume">Resume</button>
     </div>`
 
@@ -166,10 +167,15 @@ module.exports = {
   name: "Auto-Buy",
   description: "This bot will automatically buy stocks when they are about to make a lot of money",
   costs: [100,200,500,3000],
-  behaviour: function(bot, market, portfolio) {
+  behaviour: function(bot, market, portfolio, calendar) {
     const buyingCaps    = [10, 20, 30, 40, 50]; // Given in percentage of cash
     let currentCap      = (portfolio.cash/100) * buyingCaps[bot.level]; // Get the cash value
     const momentumCaps  = [0.1, 0.2, 0.3, 0.4, 0.5]
+
+    if(calendar.hour > 5){
+      console.log("bot sleeping");
+      return;
+    }
 
     // Loop through all the stocks
     market.iterate((current)=>{
@@ -221,7 +227,7 @@ class BotShopController {
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
-    this.Model      = new Model( Market, Portfolio );
+    this.Model      = new Model( Market, Portfolio, Calendar );
     this.View       = new View( this.Model, Loop, Calendar.model );
 
     this.Loop.addViewItem( this.View );
@@ -571,6 +577,8 @@ module.exports = class {
   }
 
   dayEnd(){
+    console.timeEnd('day');
+    console.time('day')
     this.dailyExpenditures.forEach(current => {
       current.daysLeft--;
       if(current.daysLeft == 0){
@@ -766,24 +774,28 @@ module.exports = class {
       name:       'Cleaning',
       payment:    10,
       timeTaken:  5, // Time in seconds
+      gameTime:   "80mins",
       locked:     0
     },
     {
       name:       'Call Center',
       payment:    25,
       timeTaken:  7,
+      gameTime:   "112mins",
       locked:     1
     },
     {
       name:       'Paperboy',
       payment:    20,
-      timeTaken:  4,
+      timeTaken:  2,
+      gameTime:   "30mins",
       locked:     2
     },
     {
       name:       'Milkman',
       payment:    25,
       timeTaken:  2,
+      gameTime:   "30mins",
       locked:     3
     }];
   }
@@ -1165,7 +1177,7 @@ class Console{
 
   message(message){
     var date = new Date();
-    var newMessage = date.getHours()+":"+date.getMinutes() + " > "+ message;
+    var newMessage = ("0" + date.getHours()).slice(-2)+":"+("0" + date.getMinutes()).slice(-2) + " > "+ message;
     this.consoleDomElement.prepend(`<p class="console">${ newMessage }</p>`);
   }
 
@@ -1183,26 +1195,8 @@ module.exports = () => {
 }
 
 },{}],24:[function(require,module,exports){
-module.exports = (title, description, loop) => {
-  loop.pause();
-
-  let DialogWindow = `
-    <div class="window on-top" id="help">
-      <h1 class="window title">${ title }</h1>
-      <p class="help">${ description }</p>
-      <button class="center" id="resume">Resume</button>
-    </div>`
-
-  $('body').append(DialogWindow);
-
-  $('#resume').click(() => {
-    loop.pause();
-    $('#help').remove();
-  });
-
-}
-
-},{}],25:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],25:[function(require,module,exports){
 module.exports = class{
   constructor(market, loop, calendar){
     this.calendar   = calendar
@@ -1220,6 +1214,16 @@ module.exports = class{
   repopulate(){
     // Clear the viewer
     $('#stock-viewer').empty();
+
+    $('#stock-viewer').append(`
+      <tr>
+        <th>Stock</th>
+        <th>Price</th>
+        <th>History</th>
+        <th></th>
+        <th></th>
+      </tr>
+    `);
 
     // Loop through all the stocks
     this.market.iterate((stock) => {
@@ -1286,7 +1290,7 @@ module.exports = class {
         <tr>
           <td>${ current.name }</td>
           <td class = "center">$${ current.payment }</td>
-          <td class = "center">${ current.timeTaken }s</td>
+          <td class = "center">${ current.gameTime }</td>
           <td><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
         </tr>
       `);
