@@ -24,6 +24,9 @@ module.exports = class {
     $('#close-welcome-window').click(() => {
       this.loop.pause();
       $('#welcome-window').remove();
+      let backgroundSound = new Audio("sounds/office.mp3");
+      backgroundSound.loop = true;
+      backgroundSound.play();
     })
   }
 }
