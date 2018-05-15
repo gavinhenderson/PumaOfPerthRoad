@@ -92,7 +92,7 @@ if (debug) {
   httpRouter.get('*', function(req, res){
       var host = req.get('Host');
       // replace the port in the host
-      host = host.replace(/:\d+$/, ":"+app.get('port'));
+      // host = host.replace(/:\d+$/, ":"+app.get('port'));
       // determine the redirect destination
       var destination = ['https://', host, req.url].join('');
       return res.redirect(destination);
