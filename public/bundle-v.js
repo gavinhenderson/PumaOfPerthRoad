@@ -8,9 +8,9 @@ module.exports = class {
     this.level        = ops.level || 0;
   }
 
-  action(market, portfolio) {
+  action(market, portfolio, calendar) {
     if(this.level>0){
-      this.behaviour(this, market, portfolio);
+      this.behaviour(this, market, portfolio, calendar);
     }
   }
 }
@@ -19,10 +19,11 @@ module.exports = class {
 const Bot = require('./Bot.js');
 
 module.exports = class {
-  constructor ( market, portfolio ) {
+  constructor ( market, portfolio, calendar ) {
     this.portfolio = portfolio.model;
     this.market    = market.model;
-    this.bots = [];
+    this.calendar  = calendar.model;
+    this.bots      = [];
   }
 
   setLevel(name, level){
@@ -40,13 +41,13 @@ module.exports = class {
 
   update () {
     this.bots.forEach(current => {
-      current.action(this.market, this.portfolio);
+      current.action(this.market, this.portfolio, this.calendar);
     })
   }
 
   upgrade(bot){
     if(this.portfolio.cash >= bot.costs[bot.level]){
-      new Audio('./sounds/robot.mp3').play()
+      //new Audio('./sounds/robot.mp3').play()
       this.portfolio.cash -= bot.costs[bot.level];
       bot.level ++;
     }
@@ -148,7 +149,7 @@ module.exports = (title, description, loop) => {
   let DialogWindow = `
     <div class="window on-top" id="help">
       <h1 class="window title">${ title }</h1>
-      <p class="description help">${ description }</p>
+      <p class="help">${ description }</p>
       <button class="center" id="resume">Resume</button>
     </div>`
 
@@ -166,15 +167,27 @@ module.exports = {
   name: "Auto-Buy",
   description: "This bot will automatically buy stocks when they are about to make a lot of money",
   costs: [100,200,500,3000],
-  behaviour: function(bot, market, portfolio) {
-    const buyingCaps = [10, 20, 30, 40, 50]; // Given in percentage of crash
-    let currentCap = (portfolio.cash/100) * buyingCaps[bot.level];
+  behaviour: function(bot, market, portfolio, calendar) {
+    const buyingCaps    = [10, 20, 30, 40, 50]; // Given in percentage of cash
+    let currentCap      = (portfolio.cash/100) * buyingCaps[bot.level]; // Get the cash value
+    const momentumCaps  = [0.1, 0.2, 0.3, 0.4, 0.5]
+
+    if(calendar.hour > 5){
+      console.log("bot sleeping");
+      return;
+    }
+
+    // Loop through all the stocks
     market.iterate((current)=>{
-      if(current.price < currentCap && current.momentum > 0.6){
-        currentCap -= current.price;
-        portfolio.buy(current, 1);
+      if(current.price < currentCap && current.momentum > momentumCaps[bot.level]){
+        // Calculate how many stocks to buy
+        let quant = Math.floor(currentCap / current.price)
+
+        // Buy stocks
+        currentCap -= current.price * quant;
+        portfolio.buy(current, quant);
       }
-    })
+    });
   }
 }
 
@@ -182,12 +195,24 @@ module.exports = {
 module.exports = {
   name: "Auto-Sell",
   description: "This bot will automatically sell stocks when they are crashing or when they are thriving",
-  costs: [100,200,1000,3000],
+  costs: [100, 200, 1000, 3000],
   behaviour: function(bot, market, portfolio) {
+    // Calculate the stock value
+    const StockValue  = portfolio.value();
+    const SellCaps    = [40, 50, 60, 70];
+    let   SellCap     = (StockValue/100) * SellCaps[bot.level];
+
     portfolio.stocks.forEach(current => {
-      // console.log(current);
-      if(current.stock.momentum < 0){
-        portfolio.sell(current.stock, current.quantity);
+      //if(current.stock.momentum < 0){
+        //portfolio.sell(current.stock, current.quantity);
+      //}
+      if(current.stock.price < SellCap && current.stock.momentum < 0){
+        // Calculate how many stocks to buy
+        let quant = Math.floor(SellCap / current.stock.price)
+
+        // Buy stocks
+        SellCap -= current.stock.price * quant;
+        portfolio.sell(current.stock, quant);
       }
     });
   }
@@ -202,7 +227,7 @@ class BotShopController {
     this.Loop       = Loop;
     this.Portfolio  = Portfolio;
     this.Market     = Market;
-    this.Model      = new Model( Market, Portfolio );
+    this.Model      = new Model( Market, Portfolio, Calendar );
     this.View       = new View( this.Model, Loop, Calendar.model );
 
     this.Loop.addViewItem( this.View );
@@ -252,7 +277,7 @@ module.exports = (loop, market, portfolio, calendar) => {
   return new BrokerController(loop, market, portfolio, calendar);
 }
 
-},{"./../view/Broker.js":20}],9:[function(require,module,exports){
+},{"./../view/Broker.js":21}],9:[function(require,module,exports){
 const CalendarView = require('./../view/Calendar.js');
 const CalendarModel = require('./../model/Calendar.js');
 
@@ -281,7 +306,7 @@ module.exports = (Loop, Portfolio, GameConsole, GameSave) => {
   return calender;
 }
 
-},{"./../model/Calendar.js":14,"./../view/Calendar.js":21}],10:[function(require,module,exports){
+},{"./../model/Calendar.js":15,"./../view/Calendar.js":22}],10:[function(require,module,exports){
 const Market        = require('./../model/Market.js');
 const MarketViewer  = require('./../view/Market.js');
 const Stock         = require('./../model/Stock.js');
@@ -338,7 +363,7 @@ module.exports = (loop, marketSave) => {
   return new MarketController(market, loop);
 }
 
-},{"./../model/Market.js":16,"./../model/Stock.js":19,"./../view/Market.js":24}],11:[function(require,module,exports){
+},{"./../model/Market.js":17,"./../model/Stock.js":20,"./../view/Market.js":25}],11:[function(require,module,exports){
 const OddJobsView  = require('./../view/OddJobs.js');
 const OddJobsModel = require('./../model/OddJobs.js');
 
@@ -356,7 +381,7 @@ module.exports = (Loop, Portfolio, Calendar) => {
   return controller;
 }
 
-},{"./../model/OddJobs.js":17,"./../view/OddJobs.js":25}],12:[function(require,module,exports){
+},{"./../model/OddJobs.js":18,"./../view/OddJobs.js":26}],12:[function(require,module,exports){
 const PortfolioView  = require('./../view/Portfolio.js');
 const Portfolio      = require('./../model/Portfolio.js');
 
@@ -397,12 +422,24 @@ module.exports = (loop, market, GameConsole, GameSave) => {
   return PortController;
 }
 
-},{"./../model/Portfolio.js":18,"./../view/Portfolio.js":26}],13:[function(require,module,exports){
+},{"./../model/Portfolio.js":19,"./../view/Portfolio.js":27}],13:[function(require,module,exports){
+const WelcomeView = require('./../view/WelcomeWindow.js');
+
+module.exports = (Loop) => {
+  Loop.pause();
+  let view = new WelcomeView(Loop);
+  view.spawnWindow();
+  return view;
+}
+
+},{"./../view/WelcomeWindow.js":28}],14:[function(require,module,exports){
 $(document).ready(function() {
   let GameConsole     = require('./view/Console.js')();
   let Loop            = require('./model/Loop.js')();
+  let WelcomeWindow   = require('./controller/WelcomeWindow.js')(Loop);
 
-  let GameSave        = store.get('GameSave');
+  //let GameSave        = store.get('GameSave');
+  let GameSave = undefined // Deprecate game saves
 
   let Market          = require('./controller/Market.js')(Loop, GameSave);
   let Portfolio       = require('./controller/Portfolio.js')(Loop, Market, GameConsole, GameSave);
@@ -413,6 +450,7 @@ $(document).ready(function() {
 
   Market.setCalendar(Calendar);
 
+  /*
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
     let saveGame = {};
@@ -422,9 +460,10 @@ $(document).ready(function() {
     saveGame.Calendar   = Calendar.getSaveInfo();
     store.set('GameSave', saveGame);
   }, 60000);
+  */
 });
 
-},{"./controller/BotShop.js":7,"./controller/Broker.js":8,"./controller/Calendar.js":9,"./controller/Market.js":10,"./controller/OddJobs.js":11,"./controller/Portfolio.js":12,"./model/Loop.js":15,"./view/Console.js":22}],14:[function(require,module,exports){
+},{"./controller/BotShop.js":7,"./controller/Broker.js":8,"./controller/Calendar.js":9,"./controller/Market.js":10,"./controller/OddJobs.js":11,"./controller/Portfolio.js":12,"./controller/WelcomeWindow.js":13,"./model/Loop.js":16,"./view/Console.js":23}],15:[function(require,module,exports){
 module.exports = class {
   constructor(Loop, Portfolio, GameConsole, controller){
     this.controller  = controller;
@@ -435,6 +474,28 @@ module.exports = class {
     this.hour        = 0;
     this.minute      = 0;
     this.gameLost    = false;
+    this.dayEndMessages = [
+      {
+        day: 1, // The start of this day
+        message: "You are now qualified to work in a call center"
+      },
+      {
+        day: 2,
+        message: "You now have the stamina to be a paperboy"
+      },
+      {
+        day: 3,
+        message: "You now have a van so can deliver milk."
+      },
+      {
+        day: 4,
+        message: "Welcome to the big leagues, trade some stocks to make money"
+      },
+      {
+        day: 6,
+        message: "Employ some of the clever bots to get an edge and make extra money"
+      }
+    ]
     this.dailyExpenditures = [
     {
       name:         "Heating",
@@ -455,17 +516,33 @@ module.exports = class {
     {
       name:         'Buy Food',
       description:  'Eat to live',
-      reoccuring:   2,
-      daysLeft:     4,
+      reoccuring:   3,
+      daysLeft:     3,
       cost:         50,
       hidden:       false
     },
     {
-      name:         "Mortgage",
-      description:  "Gotta keep make sure you keep your house",
-      reoccuring:   5, // Time in days
-      daysLeft:     10, // Time in days
+      name:         "Car Insurance",
+      description:  "Make sure your car is kept insured",
+      reoccuring:   8, // Time in days
+      daysLeft:     8, // Time in days
       cost:         1000,
+      hidden:       false
+    },
+    {
+      name:         "Mortgage",
+      description:  "Put a roof over your head",
+      reoccuring:   12,
+      daysLeft:     12,
+      cost:         3000,
+      hidden:       false
+    },
+    {
+      name:         "Car Breakdown",
+      description:  "Your car wont start",
+      reoccuring:   14,
+      daysLeft:     14,
+      cost:         8000,
       hidden:       false
     }];
   }
@@ -488,10 +565,20 @@ module.exports = class {
       this.hour = 0;
       this.dayEnd();
       this.day ++;
+
+      this.dayEndMessages.forEach(current => {
+        console.log(current.day + " = " + this.day)
+        if(current.day == this.day){
+          this.GameConsole.message(current.message);
+        }
+      });
+
     }
   }
 
   dayEnd(){
+    console.timeEnd('day');
+    console.time('day')
     this.dailyExpenditures.forEach(current => {
       current.daysLeft--;
       if(current.daysLeft == 0){
@@ -502,6 +589,8 @@ module.exports = class {
         current.daysLeft = current.reoccuring;
       }
     });
+
+
 
     if(this.portfolio.cash < 0) {
       this.gameLost = true;
@@ -537,7 +626,7 @@ module.exports = class {
   }
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 class Loop {
   constructor(){
     this.paused = false;
@@ -623,7 +712,7 @@ module.exports = () => {
   return new Loop();
 }
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = class{
 
   constructor(){
@@ -676,33 +765,37 @@ module.exports = class{
 
 }
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = class {
   constructor ( Portfolio ){
     this.portfolio = Portfolio
     this.working = false;
     this.jobs = [{
-      name:       'Cleaning',
+      name:       'Cleaner',
       payment:    10,
       timeTaken:  5, // Time in seconds
+      gameTime:   "80mins",
       locked:     0
     },
     {
-      name:       'Call Center',
+      name:       'Secretary',
       payment:    25,
       timeTaken:  7,
+      gameTime:   "112mins",
       locked:     1
     },
     {
-      name:       'Paperboy',
+      name:       'Personal Assistant',
       payment:    20,
-      timeTaken:  4,
+      timeTaken:  2,
+      gameTime:   "30mins",
       locked:     2
     },
     {
-      name:       'Milkman',
+      name:       'Trainee Trader',
       payment:    25,
       timeTaken:  2,
+      gameTime:   "30mins",
       locked:     3
     }];
   }
@@ -718,7 +811,7 @@ module.exports = class {
   }
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports = class{
   constructor(cashValue, market, gameConsole){
     this.gameConsole = gameConsole;
@@ -778,7 +871,7 @@ module.exports = class{
         }else if (this.stocks[i].quantity-quantity==0){
           this.stocks.splice(i,1);
           this.cash += stock.price*quantity;
-          new Audio('./sounds/money.mp3').play()
+          //new Audio('./sounds/money.mp3').play()
           return;
         }else{
           this.gameConsole.message("You don't have enough of "+stock.name+" to sell");
@@ -805,7 +898,7 @@ module.exports = class{
   }
 }
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = class {
   constructor( ops ){
     this.name         = ops.name;
@@ -866,7 +959,7 @@ module.exports = class {
   }
 }
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = class{
   constructor(market, portfolio, loop, calendar){
     this.calendar   = calendar
@@ -963,7 +1056,7 @@ module.exports = class{
   }
 }
 
-},{"./Help.js":23}],21:[function(require,module,exports){
+},{"./Help.js":24}],22:[function(require,module,exports){
 module.exports = class {
   constructor(calendar, loop){
     this.loop = loop;
@@ -1035,8 +1128,8 @@ module.exports = class {
         if(current.daysLeft == current.reoccuring){
           floatingDiv += `
           <tr>
-            <td>${ current.name }</td>
-            <td>${ current.cost }</td>
+            <td>${ current.name }: </td>
+            <td>-$${ current.cost }</td>
           </tr>`
           total += current.cost;
         }
@@ -1044,9 +1137,13 @@ module.exports = class {
 
       floatingDiv += `
         <tr>
-          <td>Total</td>
-          <td>${ total }</td>
+          <td>Total: </td>
+          <td>-$${ total }</td>
         </tr>
+        <tr><td></br></td></tr>
+        <tr>
+          <td>Cash Left: </td>
+          <td>$${ this.calendar.portfolio.cash.toFixed(2) }</td>
         </table>
         <button id="remove-popup">Continue</button>
       </div>`
@@ -1072,7 +1169,7 @@ module.exports = class {
   }
 }
 
-},{"./Help.js":23}],22:[function(require,module,exports){
+},{"./Help.js":24}],23:[function(require,module,exports){
 class Console{
   constructor(){
     this.consoleDomElement = $('#console');
@@ -1080,7 +1177,7 @@ class Console{
 
   message(message){
     var date = new Date();
-    var newMessage = date.getHours()+":"+date.getMinutes() + " > "+ message;
+    var newMessage = ("0" + date.getHours()).slice(-2)+":"+("0" + date.getMinutes()).slice(-2) + " > "+ message;
     this.consoleDomElement.prepend(`<p class="console">${ newMessage }</p>`);
   }
 
@@ -1097,9 +1194,9 @@ module.exports = () => {
   return gameConsole;
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],24:[function(require,module,exports){
+},{"dup":4}],25:[function(require,module,exports){
 module.exports = class{
   constructor(market, loop, calendar){
     this.calendar   = calendar
@@ -1117,6 +1214,16 @@ module.exports = class{
   repopulate(){
     // Clear the viewer
     $('#stock-viewer').empty();
+
+    $('#stock-viewer').append(`
+      <tr>
+        <th>Stock</th>
+        <th>Price</th>
+        <th>History</th>
+        <th></th>
+        <th></th>
+      </tr>
+    `);
 
     // Loop through all the stocks
     this.market.iterate((stock) => {
@@ -1163,7 +1270,7 @@ module.exports = class{
   }
 }
 
-},{"./Help.js":23}],25:[function(require,module,exports){
+},{"./Help.js":24}],26:[function(require,module,exports){
 module.exports = class {
   constructor( model, calendar, loop ){
     this.calendar = calendar;
@@ -1181,10 +1288,10 @@ module.exports = class {
     this.model.jobs.forEach(current => {
       $('#odd-jobs-table').append(`
         <tr>
-          <td>${ current.name }</td>
-          <td>${ current.payment }</td>
-          <td>${ current.timeTaken }</td>
-          <td><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
+          <td class="bottom-padding">${ current.name }</td>
+          <td class = "center bottom-padding">$${ current.payment }</td>
+          <td class = "center bottom-padding">${ current.gameTime }</td>
+          <td class="bottom-padding"><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
         </tr>
       `);
 
@@ -1229,7 +1336,7 @@ module.exports = class {
   }
 }
 
-},{"./Help.js":23}],26:[function(require,module,exports){
+},{"./Help.js":24}],27:[function(require,module,exports){
 module.exports = class {
   constructor( portfolio, loop ){
     this.portfolio      = portfolio;
@@ -1305,4 +1412,38 @@ module.exports = class {
   }
 }
 
-},{"./Help.js":23}]},{},[13]);
+},{"./Help.js":24}],28:[function(require,module,exports){
+module.exports = class {
+  constructor( loop ) {
+    this.loop = loop;
+  }
+
+  spawnWindow(){
+    $('body').append(`
+      <div id="welcome-window" style="width:500px; left: 10px; top:10px;" class="window on-top">
+        <h1 class="window title">Welcome to Puma of Perth Road</h1>
+        <p style="text-align: justify">Your task is to see how many days you last as an up and coming stock broker in the trading city of Dundee.</p>
+        <p style="text-align: justify">If throughout the game you need any help simply click the title of a window and it will tell you what to do.</p>
+        <h3 class="window subtitle">Odd Jobs</h3>
+        <p style="text-align: justify; margin-top:5px;">You can take on odd jobs to make money to make ends meet. Each job will give you a certain amount of money and will take a certain amount of time. As time goes by you will be able to do more jobs.</p>
+        <h3 class="window subtitle">Calendar</h3>
+        <p style="text-align: justify; margin-top:5px;">Make sure you keep track of what day it is. Certain days you will owe money for things that you need to live. Every day you need enough CASH to be able to pay for these other wise its game over for you.</p>
+        <h3 class="window subtitle">Portfolio</h3>
+        <p style="text-align: justify; margin-top:5px;">This is where you will learn how much you are worth. When stocks appear this is where you will see which stocks you own and how much they are worth. Make sure you stay positive in the money.</p>
+        <h3 class="window subtitle">Other</h3>
+        <p style="text-align: justify; margin-top:5px;">As the game goes on you more windows will appear. You will be able to buy and sell stocks as well as buy and upgrade robots to do the trading for you. The rest is up to you to figure out. Good luck</p>
+        <button id="close-welcome-window" style="font-size: 20px;">Start Game</button>
+      </div>
+    `);
+
+    $('#close-welcome-window').click(() => {
+      this.loop.pause();
+      $('#welcome-window').remove();
+      let backgroundSound = new Audio("sounds/office.mp3");
+      backgroundSound.loop = true;
+      backgroundSound.play();
+    })
+  }
+}
+
+},{}]},{},[14]);
