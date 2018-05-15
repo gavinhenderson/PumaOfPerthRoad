@@ -15,6 +15,10 @@ $(document).ready(function() {
 
   Market.setCalendar(Calendar);
 
+  let backgroundSound = new Audio("sounds/office.mp3");
+  backgroundSound.loop = true;
+  backgroundSound.play();
+  
   /*
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')

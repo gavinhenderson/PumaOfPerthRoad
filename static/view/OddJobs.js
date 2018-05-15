@@ -15,10 +15,10 @@ module.exports = class {
     this.model.jobs.forEach(current => {
       $('#odd-jobs-table').append(`
         <tr>
-          <td>${ current.name }</td>
-          <td class = "center">$${ current.payment }</td>
-          <td class = "center">${ current.gameTime }</td>
-          <td><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
+          <td class="bottom-padding">${ current.name }</td>
+          <td class = "center bottom-padding">$${ current.payment }</td>
+          <td class = "center bottom-padding">${ current.gameTime }</td>
+          <td class="bottom-padding"><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
         </tr>
       `);
 

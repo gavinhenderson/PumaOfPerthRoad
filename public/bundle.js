@@ -450,6 +450,10 @@ $(document).ready(function() {
 
   Market.setCalendar(Calendar);
 
+  let backgroundSound = new Audio("sounds/office.mp3");
+  backgroundSound.loop = true;
+  backgroundSound.play();
+  
   /*
   Loop.addRepeating(() => {
     GameConsole.message('Auto-Saver: Your game was saved')
@@ -771,28 +775,28 @@ module.exports = class {
     this.portfolio = Portfolio
     this.working = false;
     this.jobs = [{
-      name:       'Cleaning',
+      name:       'Cleaner',
       payment:    10,
       timeTaken:  5, // Time in seconds
       gameTime:   "80mins",
       locked:     0
     },
     {
-      name:       'Call Center',
+      name:       'Secretary',
       payment:    25,
       timeTaken:  7,
       gameTime:   "112mins",
       locked:     1
     },
     {
-      name:       'Paperboy',
+      name:       'Personal Assistant',
       payment:    20,
       timeTaken:  2,
       gameTime:   "30mins",
       locked:     2
     },
     {
-      name:       'Milkman',
+      name:       'Trainee Trader',
       payment:    25,
       timeTaken:  2,
       gameTime:   "30mins",
@@ -1288,10 +1292,10 @@ module.exports = class {
     this.model.jobs.forEach(current => {
       $('#odd-jobs-table').append(`
         <tr>
-          <td>${ current.name }</td>
-          <td class = "center">$${ current.payment }</td>
-          <td class = "center">${ current.gameTime }</td>
-          <td><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
+          <td class="bottom-padding">${ current.name }</td>
+          <td class = "center bottom-padding">$${ current.payment }</td>
+          <td class = "center bottom-padding">${ current.gameTime }</td>
+          <td class="bottom-padding"><button id="${ current.name.replace(/ /g, '-') }-work">Work</button></td>
         </tr>
       `);
 
@@ -1422,8 +1426,8 @@ module.exports = class {
     $('body').append(`
       <div id="welcome-window" style="width:500px; left: 10px; top:10px;" class="window on-top">
         <h1 class="window title">Welcome to Puma of Perth Road</h1>
-        <p style="text-align: justify">Your task is to see how many days you last as an up and coming stock broker in the trading city of Dundee</p>
-        <p style="text-align: justify">If throughout the game you need any help simply click the title of a window and it will tell you what to do</p>
+        <p style="text-align: justify">Your task is to see how many days you last as an up and coming stock broker in the trading city of Dundee.</p>
+        <p style="text-align: justify">If throughout the game you need any help simply click the title of a window and it will tell you what to do.</p>
         <h3 class="window subtitle">Odd Jobs</h3>
         <p style="text-align: justify; margin-top:5px;">You can take on odd jobs to make money to make ends meet. Each job will give you a certain amount of money and will take a certain amount of time. As time goes by you will be able to do more jobs.</p>
         <h3 class="window subtitle">Calendar</h3>

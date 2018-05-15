@@ -22,6 +22,9 @@ body{
 }
 p.no-new-line { display:inline; }
 
+.bottom-padding {
+  padding-bottom: 1em;
+}
 
 /* Alter FA Colors */
 .fa-chevron-up { color: green; }
